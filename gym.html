@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fitko Plán</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* === ZÁKLADNÍ NASTAVENÍ === */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow-x: hidden; 
+            font-family: 'Inter', sans-serif; background: #0a0e1a; color: white;
+        }
+        .animated-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            animation: bgShift 20s ease-in-out infinite;
+        }
+        @keyframes bgShift { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        #nav-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            z-index: 9999; display: flex; align-items: center; padding: 0 24px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+            backdrop-filter: blur(12px);
+        }
+        #back-btn {
+            pointer-events: auto; cursor: pointer;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white; font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        #back-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-3px); }
+        #back-btn:active { transform: scale(0.92) translateX(-3px); }
+        .screen-content {
+            padding: 24px; padding-top: 90px; min-height: 100vh;
+            animation: fadeInPage 0.5s ease-out;
+        }
+        @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* === GYM APP STYLY === */
+        .gym-cont { max-width: 640px; margin: 0 auto; }
+        .gym-h1 { 
+            font-size: 2.75rem; text-align: center; font-weight: 900; 
+            margin-bottom: 8px; letter-spacing: -1px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .gym-sub { 
+            text-align: center; opacity: 0.95; font-size: 1rem; 
+            margin-bottom: 32px; font-weight: 500;
+        }
+        .gym-prog { 
+            background: rgba(255,255,255,0.2); border-radius: 20px; 
+            height: 10px; overflow: hidden; margin-bottom: 8px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .gym-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #fff, #f0f9ff);
+            width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        .gym-cat { 
+            background: rgba(255,255,255,0.95); border-radius: 24px; 
+            padding: 24px; margin-bottom: 20px; color: #1a1a2e;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .gym-item {
+            display: flex; align-items: center; padding: 16px; margin-bottom: 10px;
+            background: #f8f9fa; border-radius: 16px; cursor: pointer; 
+            transition: all 0.3s; border: 2px solid transparent;
+        }
+        .gym-item:hover { background: #e9ecef; transform: translateX(4px); }
+        .gym-item.checked { 
+            background: linear-gradient(135deg, #e0e7ff, #ddd6fe); 
+            border-color: #667eea;
+        }
+        .gym-item.checked span { text-decoration: line-through; color: #999; }
+        .gym-box { 
+            width: 26px; height: 26px; 
+            border: 3px solid #cbd5e1; border-radius: 8px; 
+            margin-right: 14px; position: relative;
+            transition: all 0.3s;
+        }
+        .gym-item.checked .gym-box { 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea; transform: rotate(360deg);
+        }
+        .gym-item.checked .gym-box::after { 
+            content: '✓'; color: white; position: absolute; 
+            top: 50%; left: 50%; transform: translate(-50%,-50%); 
+            font-size: 16px; font-weight: bold;
+        }
+        .particle { 
+            position: fixed; pointer-events: none; 
+            font-size: 24px; z-index: 9999; filter: drop-shadow(0 0 4px rgba(255,255,255,0.5));
+        }
+        @keyframes particle-burst { 
+            to { 
+                transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg); 
+                opacity: 0; 
+            } 
+        }
+        .reset-box {
+            text-align: center; margin-top: 32px; 
+            background: rgba(255,255,255,0.15); 
+            padding: 16px; border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+        .reset-box span:first-child { font-size: 0.875rem; display: block; margin-bottom: 4px; }
+        .reset-box span:last-child { font-weight: 700; font-size: 1.125rem; }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+
+    <header id="nav-header" style="display: flex;">
+        <a href="index.html" id="back-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </a>
+    </header>
+
+    <div class="screen-content active">
+        <div class="gym-cont">
+            <h1 class="gym-h1">🏋️ Můj Plán</h1>
+            <div class="gym-sub">Tvůj týdenní tréninkový program</div>
+            
+            <div class="gym-prog"><div id="gym-bar" class="gym-fill"></div></div>
+            <div id="gym-text" style="text-align: center; font-size: 13px; margin-bottom: 24px; font-weight: 600;">0 / 0</div>
+
+            <div id="gym-list"></div>
+            
+            <div class="reset-box">
+                <span>Resetuje se v pondělí</span>
+                <span id="gym-reset"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === GYM LOGIKA ===
+        if (document.getElementById('gym-list')) {
+            const gymData = [
+                { cat: "ZÁDA", items: ["Přítahy vsedě", "Jednoruční přítahy", "Bench press", "Shrugs", "Břicho", "Deadlift"] },
+                { cat: "RUCE", items: ["Biceps", "Triceps", "Tlak nad hlavu", "Upažování", "Zápěstí"] },
+                { cat: "NOHY", items: ["Lýtka", "Leg press", "Předkopávání", "Zadní stehna"] }
+            ];
+            const G_KEY = "moje_cviky_hub_v2";
+
+            function getMonday(d) {
+                d = new Date(d);
+                var day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1); 
+                return new Date(d.setDate(diff)).setHours(0,0,0,0);
+            }
+
+            function initGym() {
+                const list = document.getElementById("gym-list");
+                let saved = JSON.parse(localStorage.getItem(G_KEY)) || { done: [], week: 0 };
+                let nowMon = getMonday(new Date());
+
+                if (saved.week !== nowMon) {
+                    saved = { done: [], week: nowMon };
+                    localStorage.setItem(G_KEY, JSON.stringify(saved));
+                }
+                document.getElementById('gym-reset').innerText = new Date(saved.week).toLocaleDateString('cs-CZ');
+
+                let html = "";
+                let total = 0;
+                
+                gymData.forEach(c => {
+                    total += c.items.length;
+                    html += `<div class="gym-cat"><h2 style="font-weight:800; margin-bottom:12px; font-size:1.25rem;">${c.cat}</h2>`;
+                    c.items.forEach(i => {
+                        let id = i.replace(/\s+/g,'_');
+                        let chk = saved.done.includes(id) ? 'checked' : '';
+                        html += `<div class="gym-item ${chk}" onclick="togGym('${id}', this)">
+                            <div class="gym-box"></div><span style="font-weight:500;">${i}</span>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                });
+                list.innerHTML = html;
+                updGymUI(saved.done.length, total);
+            }
+
+            // Funkce přiřazená do okna pro onclick v HTML
+            window.togGym = function(id, el) {
+                let saved = JSON.parse(localStorage.getItem(G_KEY));
+                let idx = saved.done.indexOf(id);
+                
+                if(idx > -1) {
+                    saved.done.splice(idx, 1);
+                    el.classList.remove('checked');
+                } else {
+                    saved.done.push(id);
+                    el.classList.add('checked');
+                    spawnPart(el);
+                }
+                localStorage.setItem(G_KEY, JSON.stringify(saved));
+                
+                let total = 0; gymData.forEach(c => total += c.items.length);
+                updGymUI(saved.done.length, total);
+            }
+
+            function updGymUI(done, total) {
+                document.getElementById('gym-bar').style.width = (done/total*100) + '%';
+                document.getElementById('gym-text').innerText = `${done} / ${total} hotovo`;
+            }
+
+            function spawnPart(el) {
+                let rect = el.getBoundingClientRect();
+                let emojis = ['🔥','💪','⚡','✨','🎯'];
+                for(let i=0; i<8; i++) {
+                    let p = document.createElement('div');
+                    p.className = 'particle';
+                    p.innerText = emojis[Math.floor(Math.random()*emojis.length)];
+                    p.style.left = (rect.left + rect.width/2) + 'px';
+                    p.style.top = (rect.top + rect.height/2) + 'px';
+                    let a = Math.random() * Math.PI * 2;
+                    let d = 50 + Math.random()*50;
+                    p.style.setProperty('--tx', Math.cos(a)*d + 'px');
+                    p.style.setProperty('--ty', Math.sin(a)*d + 'px');
+                    p.style.animation = 'particle-burst 0.6s ease-out forwards';
+                    document.body.appendChild(p);
+                    setTimeout(()=>p.remove(), 600);
+                }
+            }
+
+            initGym();
+        }
+    </script>
+</body>
+</html>

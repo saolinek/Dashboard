@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pracovní Doba</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* === ZÁKLADNÍ NASTAVENÍ === */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow-x: hidden; 
+            font-family: 'Inter', sans-serif; background: #0a0e1a; color: white;
+        }
+        .animated-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            animation: bgShift 20s ease-in-out infinite;
+        }
+        @keyframes bgShift { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        #nav-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            z-index: 9999; display: flex; align-items: center; padding: 0 24px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+            backdrop-filter: blur(12px);
+        }
+        #back-btn {
+            pointer-events: auto; cursor: pointer;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white; font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        #back-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-3px); }
+        #back-btn:active { transform: scale(0.92) translateX(-3px); }
+        .screen-content {
+            padding: 24px; padding-top: 90px; min-height: 100vh;
+            animation: fadeInPage 0.5s ease-out;
+        }
+        @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === WORK APP STYLY === */
+        .work-card {
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+            border-radius: 32px; padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+            width: 100%; max-width: 480px; color: #1f2937;
+            margin: 0 auto;
+        }
+        .work-card h1 { 
+            color: #111827; margin-bottom: 32px; 
+            font-size: 2rem; font-weight: 800; text-align: center;
+            letter-spacing: -1px;
+        }
+        .work-res {
+            font-size: 3rem; font-weight: 900; text-align: center;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        .work-slider { 
+            -webkit-appearance: none; width: 100%; background: transparent; 
+            height: 2.5rem; cursor: pointer;
+        }
+        .work-slider::-webkit-slider-runnable-track { 
+            height: 12px; background: #e0e7ff; border-radius: 6px;
+        }
+        .work-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 36px; width: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, #3B82F6, #2563eb);
+            margin-top: -12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transition: transform 0.2s;
+        }
+        .work-slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
+        .work-disp { 
+            font-size: 1.75rem; font-weight: 700; padding: 12px; 
+            background: #f3f4f6; border-radius: 16px; text-align: center; 
+            color: #111; margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+
+    <header id="nav-header" style="display: flex;">
+        <a href="index.html" id="back-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </a>
+    </header>
+
+    <div class="screen-content active">
+        <div class="work-card">
+            <h1>🕐 Kdy můžu jít domů?</h1>
+            
+            <div class="mb-6">
+                <label class="text-lg font-semibold block mb-3 text-gray-700">Příchod:</label>
+                <input type="range" id="timeSlider" min="360" max="480" value="420" step="1" class="work-slider">
+                <p id="arrivalDisplay" class="work-disp">07:00</p>
+            </div>
+            
+            <div class="mb-6">
+                <label class="text-lg font-semibold block mb-3 text-gray-700">Saldo (h):</label>
+                <input type="range" id="saldoSlider" min="-1" max="1" value="0" step="0.01" class="work-slider">
+                <p id="saldoDisplay" class="work-disp">+0.00 h</p>
+            </div>
+            
+            <div class="text-center mt-10">
+                <p class="text-lg text-gray-500 mb-2 font-semibold">Čas odchodu:</p>
+                <p id="departureDisplay" class="work-res">15:00</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === WORK LOGIKA ===
+        if (document.getElementById('timeSlider')) {
+            const tSli = document.getElementById('timeSlider');
+            const sSli = document.getElementById('saldoSlider');
+            const aDis = document.getElementById('arrivalDisplay');
+            const sDis = document.getElementById('saldoDisplay');
+            const dDis = document.getElementById('departureDisplay');
+
+            function minToTime(m) {
+                return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+            }
+            function updateWork() {
+                const arr = parseInt(tSli.value);
+                const sal = parseFloat(sSli.value);
+                aDis.textContent = minToTime(arr);
+                sDis.textContent = `${sal >= 0 ? '+' : ''}${sal.toFixed(2)} h`;
+                const dep = arr + 450 + 30 - (sal * 60);
+                dDis.textContent = minToTime(Math.round(dep % 1440));
+            }
+            tSli.addEventListener('input', updateWork);
+            sSli.addEventListener('input', updateWork);
+            updateWork(); // Spustit hned při načtení
+        }
+    </script>
+</body>
+</html>

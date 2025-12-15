@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard 2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* === ZÁKLADNÍ NASTAVENÍ === */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow-x: hidden; 
+            font-family: 'Inter', sans-serif; background: #0a0e1a; color: white;
+        }
+
+        /* === ANIMOVANÉ POZADÍ === */
+        .animated-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            animation: bgShift 20s ease-in-out infinite;
+        }
+        @keyframes bgShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* === NAVIGACE (Hlavička) === */
+        #nav-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            z-index: 9999; display: flex; align-items: center; padding: 0 24px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+            backdrop-filter: blur(12px);
+        }
+        #back-btn {
+            pointer-events: auto; cursor: pointer;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white; font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        #back-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-3px); }
+        #back-btn:active { transform: scale(0.92) translateX(-3px); }
+
+        /* === STRÁNKY A OBSAH === */
+        .screen-content {
+            padding: 24px;
+            padding-top: 90px;
+            min-height: 100vh;
+            animation: fadeInPage 0.5s ease-out;
+        }
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === HUB SCREEN (Landing Page) === */
+        .hub-header { 
+            text-align: center; margin-bottom: 48px; margin-top: 20px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+        .hub-header h1 { 
+            font-size: 2.5rem; font-weight: 900; 
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 8px; letter-spacing: -2px;
+        }
+        .hub-header p { color: #94a3b8; font-size: 1rem; font-weight: 500; }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === KARTY APPLIKACÍ (Menu) === */
+        .app-grid {
+            display: grid; grid-template-columns: 1fr; gap: 20px;
+            width: 100%; max-width: 440px; padding-bottom: 60px;
+        }
+
+        .app-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px; padding: 28px;
+            display: flex; align-items: center; gap: 20px;
+            cursor: pointer; position: relative; overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+        .app-card:nth-child(1) { animation-delay: 0.1s; }
+        .app-card:nth-child(2) { animation-delay: 0.2s; }
+        .app-card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .app-card:hover { 
+            background: rgba(30, 41, 59, 0.6); 
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .app-card:active { transform: translateY(-2px) scale(0.98); }
+
+        .app-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+            transition: width 0.3s;
+        }
+        .app-card:hover::before { width: 6px; }
+
+        .card-lol::before { 
+            background: linear-gradient(180deg, #C8AA6E 0%, #F0E6D2 100%);
+            box-shadow: 3px 0 20px rgba(200, 170, 110, 0.5);
+        }
+        .card-work::before { 
+            background: linear-gradient(180deg, #9333ea 0%, #c084fc 100%);
+            box-shadow: 3px 0 20px rgba(147, 51, 234, 0.5);
+        }
+        .card-gym::before { 
+            background: linear-gradient(180deg, #667eea 0%, #818cf8 100%);
+            box-shadow: 3px 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .card-icon {
+            width: 58px; height: 58px; border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .app-card:hover .card-icon { transform: scale(1.1) rotate(5deg); }
+
+        .card-content { flex: 1; }
+        .card-content h2 { 
+            font-weight: 700; font-size: 1.25rem; margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+        .card-content p { color: #94a3b8; font-size: 0.875rem; }
+
+        .card-arrow { 
+            color: #64748b; font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        .app-card:hover .card-arrow { transform: translateX(4px); }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+
+    <div id="hub-wrapper" style="padding: 40px 24px; display: flex; flex-direction: column; align-items: center;">
+        <div class="hub-header">
+            <h1>Dashboard 2.0</h1>
+            <p>Vyber si aplikaci</p>
+        </div>
+
+        <div class="app-grid">
+            <a href="lol.html" class="app-card card-lol" style="text-decoration: none;">
+                <div class="card-icon" style="background: linear-gradient(135deg, rgba(200, 170, 110, 0.3), rgba(200, 170, 110, 0.1)); color: #F0E6D2;">⚔️</div>
+                <div class="card-content">
+                    <h2 style="color: #F0E6D2;">LoL Penetrace</h2>
+                    <p>Kalkulačka průraznosti</p>
+                </div>
+                <div class="card-arrow">›</div>
+            </a>
+
+            <a href="work.html" class="app-card card-work" style="text-decoration: none;">
+                <div class="card-icon" style="background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(147, 51, 234, 0.1)); color: #e9d5ff;">🕐</div>
+                <div class="card-content">
+                    <h2 style="color: #e9d5ff;">Pracovní Doba</h2>
+                    <p>Odpočet času</p>
+                </div>
+                <div class="card-arrow">›</div>
+            </a>
+
+            <a href="gym.html" class="app-card card-gym" style="text-decoration: none;">
+                <div class="card-icon" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(102, 126, 234, 0.1)); color: #bfdbfe;">💪</div>
+                <div class="card-content">
+                    <h2 style="color: #bfdbfe;">Fitko Plán</h2>
+                    <p>Checklist cviků</p>
+                </div>
+                <div class="card-arrow">›</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

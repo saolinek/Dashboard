@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LoL Penetrace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* === ZÁKLADNÍ NASTAVENÍ === */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow-x: hidden; 
+            font-family: 'Inter', sans-serif; background: #0a0e1a; color: white;
+        }
+        .animated-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            animation: bgShift 20s ease-in-out infinite;
+        }
+        @keyframes bgShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        #nav-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            z-index: 9999; display: flex; align-items: center; padding: 0 24px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+            backdrop-filter: blur(12px);
+        }
+        #back-btn {
+            pointer-events: auto; cursor: pointer;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white; font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        #back-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-3px); }
+        #back-btn:active { transform: scale(0.92) translateX(-3px); }
+        .screen-content {
+            padding: 24px; padding-top: 90px; min-height: 100vh;
+            animation: fadeInPage 0.5s ease-out;
+        }
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* === LOL APP STYLY === */
+        .container-lol {
+            background: linear-gradient(145deg, #0A1428, #010A13); 
+            border: 1px solid rgba(11, 198, 227, 0.2);
+            box-shadow: 0 8px 32px rgba(11, 198, 227, 0.15);
+            border-radius: 24px; padding: 32px; max-width: 440px; margin: 0 auto;
+        }
+        #app-lol .title-font { 
+            font-family: 'Cinzel', serif; font-weight: 700; color: #F0E6D2;
+            text-shadow: 0 0 20px rgba(11, 198, 227, 0.3);
+        }
+        #app-lol input {
+            background: rgba(1, 10, 19, 0.6); 
+            border: 1px solid rgba(44, 58, 75, 0.8);
+            color: #CDD2D6; width: 100%; padding: 14px; 
+            border-radius: 12px; margin-top: 8px;
+            font-size: 1rem; transition: all 0.3s;
+        }
+        #app-lol input:focus { 
+            outline: none; border-color: #0BC6E3;
+            box-shadow: 0 0 0 3px rgba(11, 198, 227, 0.1);
+        }
+        #app-lol .res-val { 
+            font-family: 'Cinzel', serif; font-size: 3.5rem; 
+            color: #0BC6E3; text-align: center; margin-top: 16px;
+            text-shadow: 0 0 30px rgba(11, 198, 227, 0.4);
+            animation: glow 2s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(11, 198, 227, 0.4); }
+            50% { text-shadow: 0 0 40px rgba(11, 198, 227, 0.6); }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+
+    <header id="nav-header" style="display: flex;">
+        <a href="index.html" id="back-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </a>
+    </header>
+
+    <div class="screen-content active" id="app-lol">
+        <div class="container-lol">
+            <h1 class="title-font text-2xl text-center mb-4 tracking-wider">KALKULÁTOR PRŮRAZNOSTI</h1>
+            <div style="height:2px; background:linear-gradient(to right, transparent, #C89B3C, transparent); margin: 24px 0;"></div>
+            
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Plochá Průraznost</label>
+            <input type="number" id="lol-flat" placeholder="0" value="0">
+            
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mt-5 mb-2">Procentuální (%)</label>
+            <input type="number" id="lol-percent" placeholder="0" max="100" value="0">
+
+            <div style="margin-top: 40px; text-align: center;">
+                <p class="text-xs text-gray-400 uppercase tracking-widest mb-2">Maximální negace brnění</p>
+                <div id="lol-res" class="res-val">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === LOL LOGIKA ===
+        if (document.getElementById('lol-flat')) {
+            const lFlat = document.getElementById('lol-flat');
+            const lPerc = document.getElementById('lol-percent');
+            const lRes = document.getElementById('lol-res');
+
+            function calcLoL() {
+                const f = parseFloat(lFlat.value) || 0;
+                const p = parseFloat(lPerc.value) || 0;
+                let val = (p/100 >= 1) ? '∞' : (f / (1 - p/100)).toFixed(1);
+                lRes.textContent = val;
+            }
+            lFlat.addEventListener('input', calcLoL);
+            lPerc.addEventListener('input', calcLoL);
+        }
+    </script>
+</body>
+</html>
