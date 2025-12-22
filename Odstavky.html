@@ -2,10 +2,10 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<meta name="theme-color" content="#0a0e1a">
 <title>Kalkulátor odstávky</title>
 
-<!-- Tailwind pouze přes CDN, jinak je vše v jednom souboru -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
 
@@ -21,7 +21,11 @@
     --muted:#94a3b8;
 }
 
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-touch-callout:none;
+}
 
 html,body{
     margin:0;
@@ -32,6 +36,7 @@ html,body{
         radial-gradient(circle at 20% 20%,rgba(251,191,36,.08),transparent 40%),
         radial-gradient(circle at 80% 80%,rgba(239,68,68,.08),transparent 40%),
         var(--bg);
+    overflow-x:hidden;
 }
 
 /* HEADER */
@@ -42,15 +47,17 @@ header{
     height:72px;
     display:flex;
     align-items:center;
-    padding:0 24px;
+    padding:0 12px;
     z-index:10;
-    background:linear-gradient(180deg,rgba(10,14,26,.85),transparent);
-    backdrop-filter:blur(10px);
+    background:linear-gradient(180deg,rgba(10,14,26,.95),transparent);
+    backdrop-filter:blur(12px);
 }
 
 .back-btn{
-    width:44px;
-    height:44px;
+    min-width:48px;
+    min-height:48px;
+    width:48px;
+    height:48px;
     border-radius:50%;
     display:flex;
     align-items:center;
@@ -58,9 +65,10 @@ header{
     background:rgba(255,255,255,.08);
     border:1px solid rgba(255,255,255,.15);
     transition:.25s;
+    cursor:pointer;
 }
-.back-btn:hover{
-    transform:translateX(-4px);
+.back-btn:active{
+    transform:scale(.94);
     background:rgba(255,255,255,.15);
 }
 
@@ -70,7 +78,7 @@ main{
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:96px 20px 32px;
+    padding:88px 16px 32px;
     animation:fade .4s ease-out;
 }
 
@@ -82,11 +90,11 @@ main{
 /* CARD */
 .card{
     width:100%;
-    max-width:420px;
+    max-width:520px;
     background:linear-gradient(180deg,rgba(15,23,42,.9),rgba(2,6,23,.95));
     border:1px solid rgba(255,255,255,.08);
-    border-radius:28px;
-    padding:32px;
+    border-radius:24px;
+    padding:24px;
     box-shadow:0 40px 80px rgba(0,0,0,.6);
     position:relative;
 }
@@ -95,7 +103,7 @@ main{
     content:"";
     position:absolute;
     inset:0;
-    border-radius:28px;
+    border-radius:24px;
     box-shadow:inset 0 0 0 1px rgba(251,191,36,.12);
     pointer-events:none;
 }
@@ -105,69 +113,83 @@ h1{
     font-family:'Cinzel',serif;
     text-align:center;
     color:var(--accent);
-    margin:0 0 6px;
+    margin:0 0 8px;
+    font-size:1.75rem;
+    line-height:1.2;
 }
 
 .sub{
     text-align:center;
     color:var(--muted);
-    font-size:.9rem;
-    margin-bottom:28px;
+    font-size:.95rem;
+    margin-bottom:24px;
+    line-height:1.4;
 }
 
 label{
     display:block;
-    font-size:.7rem;
-    letter-spacing:.12em;
+    font-size:.8rem;
+    letter-spacing:.08em;
     color:var(--muted);
     font-weight:700;
-    margin-bottom:6px;
+    margin-bottom:8px;
+    text-transform:uppercase;
 }
 
 .row{
     display:flex;
     gap:12px;
-    margin-bottom:28px;
+    margin-bottom:24px;
 }
 
 select{
     flex:1;
+    min-height:52px;
     padding:14px 16px;
     border-radius:14px;
     background:#020617;
     border:1px solid rgba(255,255,255,.1);
     color:var(--text);
-    font-size:1rem;
+    font-size:1.05rem;
     transition:.25s;
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+    padding-right:40px;
 }
 select:focus{
     outline:none;
     border-color:var(--accent);
-    box-shadow:0 0 0 2px rgba(251,191,36,.25);
+    box-shadow:0 0 0 3px rgba(251,191,36,.2);
 }
 
 /* BUTTON */
 button{
     width:100%;
-    padding:16px;
-    border-radius:18px;
+    min-height:56px;
+    padding:16px 24px;
+    border-radius:16px;
     background:linear-gradient(135deg,var(--accent),var(--accent-strong));
     border:none;
     color:#000;
-    font-weight:800;
+    font-size:1.05rem;
+    font-weight:900;
     letter-spacing:.5px;
     cursor:pointer;
     transition:.2s;
     box-shadow:0 10px 30px rgba(251,191,36,.35);
+    touch-action:manipulation;
 }
-button:hover{transform:translateY(-1px)}
-button:active{transform:scale(.97)}
+button:active{
+    transform:scale(.97);
+}
 
 /* RESULT */
 .result{
-    margin-top:28px;
-    padding:22px;
-    border-radius:20px;
+    margin-top:24px;
+    padding:24px 20px;
+    border-radius:18px;
     text-align:center;
     animation:pop .35s ease-out;
 }
@@ -189,16 +211,164 @@ button:active{transform:scale(.97)}
 
 .days{
     font-family:'Cinzel',serif;
-    font-size:2.6rem;
+    font-size:2.8rem;
     font-weight:800;
-    margin:6px 0;
+    margin:8px 0;
+    line-height:1;
 }
 
 .note{
-    margin-top:26px;
-    font-size:.7rem;
+    margin-top:24px;
+    padding:16px;
+    font-size:.8rem;
     text-align:center;
     color:#64748b;
+    background:rgba(255,255,255,.02);
+    border-radius:12px;
+    line-height:1.6;
+}
+
+/* MOBILNÍ OPTIMALIZACE */
+@media (max-width:480px){
+    header{
+        height:64px;
+        padding:0 10px;
+    }
+    
+    .back-btn{
+        min-width:44px;
+        min-height:44px;
+        width:44px;
+        height:44px;
+    }
+    
+    main{
+        padding:80px 12px 24px;
+        align-items:flex-start;
+    }
+    
+    .card{
+        padding:20px;
+        border-radius:20px;
+        margin-top:12px;
+    }
+    
+    h1{
+        font-size:1.5rem;
+    }
+    
+    .sub{
+        font-size:.9rem;
+        margin-bottom:20px;
+    }
+    
+    label{
+        font-size:.75rem;
+        margin-bottom:6px;
+    }
+    
+    .row{
+        gap:10px;
+        margin-bottom:20px;
+    }
+    
+    select{
+        min-height:48px;
+        padding:12px 14px;
+        padding-right:36px;
+        font-size:1rem;
+        background-position:right 12px center;
+    }
+    
+    button{
+        min-height:52px;
+        padding:14px 20px;
+        font-size:1rem;
+        border-radius:14px;
+    }
+    
+    .result{
+        margin-top:20px;
+        padding:20px 16px;
+    }
+    
+    .days{
+        font-size:2.4rem;
+    }
+    
+    .note{
+        font-size:.75rem;
+        padding:14px;
+        margin-top:20px;
+    }
+}
+
+/* EXTRA MALÉ OBRAZOVKY */
+@media (max-width:360px){
+    h1{
+        font-size:1.35rem;
+    }
+    
+    .card{
+        padding:16px;
+    }
+    
+    .row{
+        flex-direction:column;
+        gap:8px;
+    }
+    
+    select{
+        width:100%;
+    }
+    
+    .days{
+        font-size:2.2rem;
+    }
+}
+
+/* LANDSCAPE NA MOBILECH */
+@media (max-height:500px) and (orientation:landscape){
+    main{
+        padding:70px 12px 20px;
+    }
+    
+    .card{
+        margin-top:0;
+    }
+    
+    h1{
+        font-size:1.3rem;
+        margin-bottom:4px;
+    }
+    
+    .sub{
+        margin-bottom:16px;
+        font-size:.85rem;
+    }
+    
+    .row{
+        margin-bottom:16px;
+    }
+    
+    button{
+        min-height:48px;
+    }
+    
+    .result{
+        margin-top:16px;
+        padding:16px;
+    }
+    
+    .days{
+        font-size:2rem;
+        margin:4px 0;
+    }
+    
+    .note{
+        margin-top:16px;
+        padding:12px;
+    }
 }
 </style>
 </head>
@@ -206,8 +376,8 @@ button:active{transform:scale(.97)}
 <body>
 
 <header>
-    <a href="index.html" class="back-btn">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <a href="index.html" class="back-btn" aria-label="Zpět">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
@@ -219,15 +389,15 @@ button:active{transform:scale(.97)}
         <h1>Ohlášení odstávky</h1>
         <div class="sub">Kontrola zákonné lhůty</div>
 
-        <label>Datum zahájení</label>
+        <label for="day">Datum zahájení</label>
         <div class="row">
-            <select id="day"></select>
-            <select id="month"></select>
+            <select id="day" aria-label="Den"></select>
+            <select id="month" aria-label="Měsíc"></select>
         </div>
 
         <button onclick="checkNotice()">Zkontrolovat lhůtu</button>
 
-        <div id="output"></div>
+        <div id="output" role="status" aria-live="polite"></div>
 
         <div class="note">
             Nastavená minimální lhůta: <strong>20 dní</strong><br>
