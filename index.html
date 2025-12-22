@@ -66,7 +66,7 @@
         .app-card:nth-child(1) { animation-delay: 0.1s; }
         .app-card:nth-child(2) { animation-delay: 0.2s; }
         .app-card:nth-child(3) { animation-delay: 0.3s; }
-        .app-card:nth-child(4) { animation-delay: 0.4s; } /* Nová karta */
+        .app-card:nth-child(4) { animation-delay: 0.4s; }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
@@ -99,10 +99,10 @@
             background: linear-gradient(180deg, #667eea 0%, #818cf8 100%);
             box-shadow: 3px 0 20px rgba(102, 126, 234, 0.5);
         }
-        /* Nová zelená karta pro text */
-        .card-text::before { 
-            background: linear-gradient(180deg, #10b981 0%, #34d399 100%);
-            box-shadow: 3px 0 20px rgba(16, 185, 129, 0.5);
+        /* Nová oranžová karta pro Odstávky */
+        .card-outage::before { 
+            background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 3px 0 20px rgba(245, 158, 11, 0.5);
         }
 
         .card-icon {
@@ -165,11 +165,11 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="Odstavky.html" class="app-card card-text" style="text-decoration: none;">
-                <div class="card-icon" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.1)); color: #a7f3d0;">📝</div>
+            <a href="Odstavky.html" class="app-card card-outage" style="text-decoration: none;">
+                <div class="card-icon" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(245, 158, 11, 0.1)); color: #fcd34d;">📅</div>
                 <div class="card-content">
-                    <h2 style="color: #a7f3d0;">Odstavky</h2>
-                    <p>Textové nástroje</p>
+                    <h2 style="color: #fcd34d;">Plánovač Odstávek</h2>
+                    <p>Ověření zákonné lhůty</p>
                 </div>
                 <div class="card-arrow">›</div>
             </a>
