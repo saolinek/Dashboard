@@ -1,464 +1,245 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<meta name="theme-color" content="#0a0e1a">
-<title>Kalkulátor odstávky</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Plánovač Odstávek</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* === ZÁKLADNÍ NASTAVENÍ === */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; /* Zákaz scrollování */
+            font-family: 'Inter', sans-serif; background: #0a0e1a; color: white;
+        }
 
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+        /* === ANIMOVANÉ POZADÍ (Styl laděný do oranžova pro Odstávky) === */
+        .animated-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(251, 191, 36, 0.1) 0%, transparent 50%);
+            animation: bgShift 20s ease-in-out infinite;
+        }
+        @keyframes bgShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
 
-<style>
-:root{
-    --bg:#0a0e1a;
-    --card:#020617;
-    --accent:#fbbf24;
-    --accent-strong:#f59e0b;
-    --ok:#22c55e;
-    --bad:#ef4444;
-    --text:#e5e7eb;
-    --muted:#94a3b8;
-}
+        /* === HLAVIČKA (Stejný styl jako Gym/Work) === */
+        #nav-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            z-index: 9999; display: flex; align-items: center; padding: 0 24px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+            backdrop-filter: blur(4px);
+        }
+        #back-btn {
+            pointer-events: auto; cursor: pointer;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white; font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-decoration: none;
+        }
+        #back-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-3px); }
+        #back-btn:active { transform: scale(0.92) translateX(-3px); }
 
-*{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
-    -webkit-touch-callout:none;
-}
+        /* === OBSAH (Flexbox pro centrování bez scrollu) === */
+        .screen-content {
+            height: 100dvh; /* Dynamic Viewport Height pro mobily */
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 24px;
+            animation: fadeInPage 0.5s ease-out;
+        }
+        @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-html,body{
-    margin:0;
-    height:100%;
-    font-family:'Inter',sans-serif;
-    color:var(--text);
-    background:
-        radial-gradient(circle at 20% 20%,rgba(251,191,36,.08),transparent 40%),
-        radial-gradient(circle at 80% 80%,rgba(239,68,68,.08),transparent 40%),
-        var(--bg);
-    overflow-x:hidden;
-}
+        /* === KARTA APLIKACE === */
+        .outage-card {
+            background: rgba(30, 41, 59, 0.6); 
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px; padding: 32px;
+            width: 100%; max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Oranžový pruh nahoře (Indikátor) */
+        .outage-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+        }
 
-/* HEADER */
-header{
-    position:fixed;
-    top:0;left:0;
-    width:100%;
-    height:72px;
-    display:flex;
-    align-items:center;
-    padding:0 12px;
-    z-index:10;
-    background:linear-gradient(180deg,rgba(10,14,26,.95),transparent);
-    backdrop-filter:blur(12px);
-}
+        h1 {
+            font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.75rem;
+            text-align: center; margin-bottom: 4px; color: #fcd34d;
+            text-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+        }
+        .sub-text {
+            text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 32px;
+        }
 
-.back-btn{
-    min-width:48px;
-    min-height:48px;
-    width:48px;
-    height:48px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.15);
-    transition:.25s;
-    cursor:pointer;
-}
-.back-btn:active{
-    transform:scale(.94);
-    background:rgba(255,255,255,.15);
-}
+        /* === FORMULÁŘ === */
+        .input-group {
+            display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 24px;
+        }
+        .select-wrapper { position: relative; }
+        
+        select {
+            width: 100%; appearance: none;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white; padding: 16px; border-radius: 16px;
+            font-size: 1rem; font-weight: 500; font-family: 'Inter', sans-serif;
+            transition: all 0.2s; cursor: pointer;
+        }
+        select:focus { outline: none; border-color: #f59e0b; background: rgba(15, 23, 42, 0.8); }
+        
+        /* Vlastní šipka pro select */
+        .select-arrow {
+            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+            pointer-events: none; color: #94a3b8; font-size: 0.8rem;
+        }
 
-/* LAYOUT */
-main{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:88px 16px 32px;
-    animation:fade .4s ease-out;
-}
+        button {
+            width: 100%; padding: 18px; border-radius: 18px; border: none;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #fff; font-size: 1.1rem; font-weight: 700;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        button:active { transform: scale(0.98); }
 
-@keyframes fade{
-    from{opacity:0;transform:translateY(10px)}
-    to{opacity:1}
-}
+        /* === VÝSLEDEK === */
+        #output { margin-top: 24px; min-height: 100px; }
+        
+        .result-box {
+            background: rgba(255,255,255,0.03); border-radius: 20px;
+            padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-/* CARD */
-.card{
-    width:100%;
-    max-width:520px;
-    background:linear-gradient(180deg,rgba(15,23,42,.9),rgba(2,6,23,.95));
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:24px;
-    padding:24px;
-    box-shadow:0 40px 80px rgba(0,0,0,.6);
-    position:relative;
-}
+        .res-days { 
+            font-family: 'Cinzel', serif; font-size: 2.5rem; font-weight: 700; 
+            line-height: 1.2; margin: 8px 0;
+        }
+        .res-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; opacity: 0.8; }
+        
+        .status-ok { color: #4ade80; text-shadow: 0 0 15px rgba(74, 222, 128, 0.3); }
+        .status-bad { color: #f87171; text-shadow: 0 0 15px rgba(248, 113, 113, 0.3); }
 
-.card::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:24px;
-    box-shadow:inset 0 0 0 1px rgba(251,191,36,.12);
-    pointer-events:none;
-}
-
-/* TYPO */
-h1{
-    font-family:'Cinzel',serif;
-    text-align:center;
-    color:var(--accent);
-    margin:0 0 8px;
-    font-size:1.75rem;
-    line-height:1.2;
-}
-
-.sub{
-    text-align:center;
-    color:var(--muted);
-    font-size:.95rem;
-    margin-bottom:24px;
-    line-height:1.4;
-}
-
-label{
-    display:block;
-    font-size:.8rem;
-    letter-spacing:.08em;
-    color:var(--muted);
-    font-weight:700;
-    margin-bottom:8px;
-    text-transform:uppercase;
-}
-
-.row{
-    display:flex;
-    gap:12px;
-    margin-bottom:24px;
-}
-
-select{
-    flex:1;
-    min-height:52px;
-    padding:14px 16px;
-    border-radius:14px;
-    background:#020617;
-    border:1px solid rgba(255,255,255,.1);
-    color:var(--text);
-    font-size:1.05rem;
-    transition:.25s;
-    appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;
-    background-position:right 14px center;
-    padding-right:40px;
-}
-select:focus{
-    outline:none;
-    border-color:var(--accent);
-    box-shadow:0 0 0 3px rgba(251,191,36,.2);
-}
-
-/* BUTTON */
-button{
-    width:100%;
-    min-height:56px;
-    padding:16px 24px;
-    border-radius:16px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-strong));
-    border:none;
-    color:#000;
-    font-size:1.05rem;
-    font-weight:900;
-    letter-spacing:.5px;
-    cursor:pointer;
-    transition:.2s;
-    box-shadow:0 10px 30px rgba(251,191,36,.35);
-    touch-action:manipulation;
-}
-button:active{
-    transform:scale(.97);
-}
-
-/* RESULT */
-.result{
-    margin-top:24px;
-    padding:24px 20px;
-    border-radius:18px;
-    text-align:center;
-    animation:pop .35s ease-out;
-}
-@keyframes pop{
-    from{opacity:0;transform:scale(.96)}
-    to{opacity:1}
-}
-
-.result.ok{
-    background:rgba(34,197,94,.12);
-    border:1px solid rgba(34,197,94,.35);
-    color:#bbf7d0;
-}
-.result.bad{
-    background:rgba(239,68,68,.12);
-    border:1px solid rgba(239,68,68,.35);
-    color:#fecaca;
-}
-
-.days{
-    font-family:'Cinzel',serif;
-    font-size:2.8rem;
-    font-weight:800;
-    margin:8px 0;
-    line-height:1;
-}
-
-.note{
-    margin-top:24px;
-    padding:16px;
-    font-size:.8rem;
-    text-align:center;
-    color:#64748b;
-    background:rgba(255,255,255,.02);
-    border-radius:12px;
-    line-height:1.6;
-}
-
-/* MOBILNÍ OPTIMALIZACE */
-@media (max-width:480px){
-    header{
-        height:64px;
-        padding:0 10px;
-    }
-    
-    .back-btn{
-        min-width:44px;
-        min-height:44px;
-        width:44px;
-        height:44px;
-    }
-    
-    main{
-        padding:80px 12px 24px;
-        align-items:flex-start;
-    }
-    
-    .card{
-        padding:20px;
-        border-radius:20px;
-        margin-top:12px;
-    }
-    
-    h1{
-        font-size:1.5rem;
-    }
-    
-    .sub{
-        font-size:.9rem;
-        margin-bottom:20px;
-    }
-    
-    label{
-        font-size:.75rem;
-        margin-bottom:6px;
-    }
-    
-    .row{
-        gap:10px;
-        margin-bottom:20px;
-    }
-    
-    select{
-        min-height:48px;
-        padding:12px 14px;
-        padding-right:36px;
-        font-size:1rem;
-        background-position:right 12px center;
-    }
-    
-    button{
-        min-height:52px;
-        padding:14px 20px;
-        font-size:1rem;
-        border-radius:14px;
-    }
-    
-    .result{
-        margin-top:20px;
-        padding:20px 16px;
-    }
-    
-    .days{
-        font-size:2.4rem;
-    }
-    
-    .note{
-        font-size:.75rem;
-        padding:14px;
-        margin-top:20px;
-    }
-}
-
-/* EXTRA MALÉ OBRAZOVKY */
-@media (max-width:360px){
-    h1{
-        font-size:1.35rem;
-    }
-    
-    .card{
-        padding:16px;
-    }
-    
-    .row{
-        flex-direction:column;
-        gap:8px;
-    }
-    
-    select{
-        width:100%;
-    }
-    
-    .days{
-        font-size:2.2rem;
-    }
-}
-
-/* LANDSCAPE NA MOBILECH */
-@media (max-height:500px) and (orientation:landscape){
-    main{
-        padding:70px 12px 20px;
-    }
-    
-    .card{
-        margin-top:0;
-    }
-    
-    h1{
-        font-size:1.3rem;
-        margin-bottom:4px;
-    }
-    
-    .sub{
-        margin-bottom:16px;
-        font-size:.85rem;
-    }
-    
-    .row{
-        margin-bottom:16px;
-    }
-    
-    button{
-        min-height:48px;
-    }
-    
-    .result{
-        margin-top:16px;
-        padding:16px;
-    }
-    
-    .days{
-        font-size:2rem;
-        margin:4px 0;
-    }
-    
-    .note{
-        margin-top:16px;
-        padding:12px;
-    }
-}
-</style>
+        .legal-note {
+            margin-top: 24px; text-align: center; font-size: 0.75rem; color: #64748b;
+            padding: 12px; border-radius: 12px; background: rgba(0,0,0,0.2);
+        }
+    </style>
 </head>
-
 <body>
+    <div class="animated-bg"></div>
 
-<header>
-    <a href="index.html" class="back-btn" aria-label="Zpět">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-    </a>
-</header>
+    <header id="nav-header">
+        <a href="index.html" id="back-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </a>
+    </header>
 
-<main>
-    <div class="card">
-        <h1>Ohlášení odstávky</h1>
-        <div class="sub">Kontrola zákonné lhůty</div>
+    <div class="screen-content">
+        <div class="outage-card">
+            <h1>Ohlášení Odstávky</h1>
+            <div class="sub-text">Ověření termínu pro nahlášení</div>
 
-        <label for="day">Datum zahájení</label>
-        <div class="row">
-            <select id="day" aria-label="Den"></select>
-            <select id="month" aria-label="Měsíc"></select>
-        </div>
+            <div class="input-group">
+                <div class="select-wrapper">
+                    <select id="day"></select>
+                    <div class="select-arrow">▼</div>
+                </div>
+                <div class="select-wrapper">
+                    <select id="month"></select>
+                    <div class="select-arrow">▼</div>
+                </div>
+            </div>
 
-        <button onclick="checkNotice()">Zkontrolovat lhůtu</button>
+            <button onclick="checkNotice()">Zkontrolovat</button>
 
-        <div id="output" role="status" aria-live="polite"></div>
+            <div id="output">
+                </div>
 
-        <div class="note">
-            Nastavená minimální lhůta: <strong>20 dní</strong><br>
-            (zákonné minimum bývá 15 dní)
+            <div class="legal-note">
+                Vnitří pravidlo: min. 20 dní<br>
+                (Zákonné minimum: 15 dní)
+            </div>
         </div>
     </div>
-</main>
 
-<script>
-const daySelect = document.getElementById('day');
-const monthSelect = document.getElementById('month');
-const output = document.getElementById('output');
+    <script>
+        // === LOGIKA APLIKACE ===
+        const daySelect = document.getElementById('day');
+        const monthSelect = document.getElementById('month');
+        const output = document.getElementById('output');
 
-// dny
-for(let d=1; d<=31; d++){
-    daySelect.innerHTML += `<option value="${d}">${d}.</option>`;
-}
+        // Naplnění selectů
+        for(let d=1; d<=31; d++){
+            daySelect.innerHTML += `<option value="${d}">${d}.</option>`;
+        }
 
-// měsíce
-const months=[
-    'Leden','Únor','Březen','Duben','Květen','Červen',
-    'Červenec','Srpen','Září','Říjen','Listopad','Prosinec'
-];
-months.forEach((m,i)=>{
-    monthSelect.innerHTML += `<option value="${i}">${m}</option>`;
-});
+        const months = [
+            'Leden','Únor','Březen','Duben','Květen','Červen',
+            'Červenec','Srpen','Září','Říjen','Listopad','Prosinec'
+        ];
+        months.forEach((m,i)=>{
+            monthSelect.innerHTML += `<option value="${i}">${m}</option>`;
+        });
 
-// dnešní datum
-const now = new Date();
-daySelect.value = now.getDate();
-monthSelect.value = now.getMonth();
+        // Nastavení dnešního data
+        const now = new Date();
+        daySelect.value = now.getDate();
+        monthSelect.value = now.getMonth();
 
-function checkNotice(){
-    const day = parseInt(daySelect.value);
-    const month = parseInt(monthSelect.value);
+        function checkNotice(){
+            const day = parseInt(daySelect.value);
+            const month = parseInt(monthSelect.value);
 
-    const today = new Date();
-    today.setHours(0,0,0,0);
+            const today = new Date();
+            today.setHours(0,0,0,0);
 
-    let outage = new Date(today.getFullYear(), month, day);
-    if(outage < today) outage.setFullYear(today.getFullYear()+1);
+            let outage = new Date(today.getFullYear(), month, day);
+            
+            // Pokud je datum v minulosti (např. leden vybrán v prosinci), předpokládáme příští rok
+            if(outage < today) {
+                outage.setFullYear(today.getFullYear() + 1);
+            }
 
-    const diffDays = Math.ceil((outage - today)/(1000*60*60*24));
+            // Rozdíl ve dnech
+            const diffTime = outage - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if(diffDays >= 20){
-        output.innerHTML = `
-        <div class="result ok">
-            <div>Lhůta splněna</div>
-            <div class="days">${diffDays} dní</div>
-            <div>předem</div>
-        </div>`;
-    } else {
-        output.innerHTML = `
-        <div class="result bad">
-            <div>Nedostatečná lhůta</div>
-            <div class="days">${diffDays} dní</div>
-            <div>zbývá (min. 20)</div>
-        </div>`;
-    }
-}
-</script>
-
+            let html = '';
+            
+            if(diffDays >= 20){
+                html = `
+                <div class="result-box">
+                    <div class="res-label status-ok">Lhůta v pořádku</div>
+                    <div class="res-days status-ok">${diffDays} dní</div>
+                    <div style="font-size: 0.9rem; color:#cbd5e1;">předem</div>
+                </div>`;
+            } else {
+                html = `
+                <div class="result-box" style="border-color: rgba(248, 113, 113, 0.2);">
+                    <div class="res-label status-bad">Nedostatečná lhůta</div>
+                    <div class="res-days status-bad">${diffDays} dní</div>
+                    <div style="font-size: 0.9rem; color:#cbd5e1;">zbývá (minimum 20)</div>
+                </div>`;
+            }
+            output.innerHTML = html;
+        }
+    </script>
 </body>
 </html>
