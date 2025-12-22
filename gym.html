@@ -7,37 +7,33 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        /* === ZÁKLADNÍ NASTAVENÍ === */
+        /* === ZÁKLADNÍ NASTAVENÍ (LIGHT MODE) === */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { 
             margin: 0; padding: 0; height: 100%; width: 100%; overflow-x: hidden; 
-            font-family: 'Inter', sans-serif; background: #0a0e1a; color: white;
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); /* Pastel Blue */
+            color: #1e293b;
         }
-        .animated-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
-            animation: bgShift 20s ease-in-out infinite;
-        }
-        @keyframes bgShift { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .animated-bg { display: none; }
+        
         #nav-header {
             position: fixed; top: 0; left: 0; width: 100%; height: 70px;
             z-index: 9999; display: flex; align-items: center; padding: 0 24px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+            background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
         }
         #back-btn {
             pointer-events: auto; cursor: pointer;
             width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.15);
+            background: #ffffff; border: 1px solid #e2e8f0;
             display: flex; align-items: center; justify-content: center;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            color: white; font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: #475569; font-size: 1.2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        #back-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-3px); }
+        #back-btn:hover { background: #f0f9ff; transform: translateX(-3px); }
         #back-btn:active { transform: scale(0.92) translateX(-3px); }
         .screen-content {
             padding: 24px; padding-top: 90px; min-height: 100vh;
@@ -45,53 +41,66 @@
         }
         @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* === GYM APP STYLY === */
-        .gym-cont { max-width: 640px; margin: 0 auto; }
+        /* === GYM APP STYLY (LIGHT) === */
+        .gym-cont { max-width: 640px; margin: 0 auto; padding-bottom: 40px; }
         .gym-h1 { 
             font-size: 2.75rem; text-align: center; font-weight: 900; 
             margin-bottom: 8px; letter-spacing: -1px;
-            text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            color: #0f172a;
         }
         .gym-sub { 
-            text-align: center; opacity: 0.95; font-size: 1rem; 
+            text-align: center; color: #475569; font-size: 1rem; 
             margin-bottom: 32px; font-weight: 500;
         }
         .gym-prog { 
-            background: rgba(255,255,255,0.2); border-radius: 20px; 
-            height: 10px; overflow: hidden; margin-bottom: 8px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            background: #ffffff; border-radius: 20px; 
+            height: 14px; overflow: hidden; margin-bottom: 8px;
+            border: 2px solid #e2e8f0;
         }
         .gym-fill { 
             height: 100%; 
-            background: linear-gradient(90deg, #fff, #f0f9ff);
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
             width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
         .gym-cat { 
-            background: rgba(255,255,255,0.95); border-radius: 24px; 
-            padding: 24px; margin-bottom: 20px; color: #1a1a2e;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            background: #ffffff; border-radius: 24px; /* Solid White */
+            padding: 24px; margin-bottom: 24px; 
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         }
+        
+        /* Barvy pro kategorie (podle pořadí) */
+        .gym-cat:nth-of-type(1) { border-top: 5px solid #0284c7; } /* Záda - Modrá */
+        .gym-cat:nth-of-type(1) h2 { color: #0284c7; }
+        
+        .gym-cat:nth-of-type(2) { border-top: 5px solid #7c3aed; } /* Ruce - Fialová */
+        .gym-cat:nth-of-type(2) h2 { color: #7c3aed; }
+        
+        .gym-cat:nth-of-type(3) { border-top: 5px solid #059669; } /* Nohy - Zelená */
+        .gym-cat:nth-of-type(3) h2 { color: #059669; }
+
         .gym-item {
-            display: flex; align-items: center; padding: 16px; margin-bottom: 10px;
-            background: #f8f9fa; border-radius: 16px; cursor: pointer; 
-            transition: all 0.3s; border: 2px solid transparent;
+            display: flex; align-items: center; padding: 18px; margin-bottom: 12px;
+            background: #f8fafc; border-radius: 16px; cursor: pointer; 
+            transition: all 0.2s; border: 1px solid #e2e8f0;
         }
-        .gym-item:hover { background: #e9ecef; transform: translateX(4px); }
+        .gym-item:hover { background: #f0f9ff; transform: translateX(2px); }
         .gym-item.checked { 
-            background: linear-gradient(135deg, #e0e7ff, #ddd6fe); 
-            border-color: #667eea;
+            background: #f0fdf4; 
+            border-color: #86efac;
         }
-        .gym-item.checked span { text-decoration: line-through; color: #999; }
+        .gym-item.checked span { text-decoration: line-through; color: #94a3b8; }
+        
         .gym-box { 
             width: 26px; height: 26px; 
-            border: 3px solid #cbd5e1; border-radius: 8px; 
+            border: 2px solid #cbd5e1; border-radius: 8px; 
+            background: #ffffff;
             margin-right: 14px; position: relative;
             transition: all 0.3s;
         }
         .gym-item.checked .gym-box { 
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-color: #667eea; transform: rotate(360deg);
+            background: #22c55e;
+            border-color: #22c55e; transform: rotate(360deg);
         }
         .gym-item.checked .gym-box::after { 
             content: '✓'; color: white; position: absolute; 
@@ -100,7 +109,7 @@
         }
         .particle { 
             position: fixed; pointer-events: none; 
-            font-size: 24px; z-index: 9999; filter: drop-shadow(0 0 4px rgba(255,255,255,0.5));
+            font-size: 24px; z-index: 9999; 
         }
         @keyframes particle-burst { 
             to { 
@@ -110,12 +119,12 @@
         }
         .reset-box {
             text-align: center; margin-top: 32px; 
-            background: rgba(255,255,255,0.15); 
+            background: rgba(255,255,255,0.4); color: #475569;
             padding: 16px; border-radius: 16px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(5px);
         }
-        .reset-box span:first-child { font-size: 0.875rem; display: block; margin-bottom: 4px; }
-        .reset-box span:last-child { font-weight: 700; font-size: 1.125rem; }
+        .reset-box span:first-child { font-size: 0.875rem; display: block; margin-bottom: 4px; color: #475569; }
+        .reset-box span:last-child { font-weight: 700; font-size: 1.125rem; color: #1e293b; }
     </style>
 </head>
 <body>

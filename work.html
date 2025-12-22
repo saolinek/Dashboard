@@ -7,37 +7,34 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        /* === ZÁKLADNÍ NASTAVENÍ === */
+        /* === ZÁKLADNÍ NASTAVENÍ (LIGHT MODE & NO SCROLL) === */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%; overflow-x: hidden; 
-            font-family: 'Inter', sans-serif; background: #0a0e1a; color: white;
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); /* Purple/Pink Pastel */
+            color: #1e293b;
         }
-        .animated-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
-            animation: bgShift 20s ease-in-out infinite;
-        }
-        @keyframes bgShift { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .animated-bg { display: none; }
+        
         #nav-header {
             position: fixed; top: 0; left: 0; width: 100%; height: 70px;
             z-index: 9999; display: flex; align-items: center; padding: 0 24px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+            background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
         }
         #back-btn {
             pointer-events: auto; cursor: pointer;
             width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.15);
+            background: #ffffff; 
+            border: 1px solid #e2e8f0;
             display: flex; align-items: center; justify-content: center;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            color: white; font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: #475569; font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        #back-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-3px); }
+        #back-btn:hover { background: #faf5ff; transform: translateX(-3px); }
         #back-btn:active { transform: scale(0.92) translateX(-3px); }
         .screen-content {
             padding: 24px; padding-top: 90px; min-height: 100vh;
@@ -47,56 +44,63 @@
 
         /* === WORK APP STYLY === */
         .work-card {
-            background: rgba(30, 35, 50, 0.7); /* Tmavší, modernější vzhled */
-            backdrop-filter: blur(25px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #ffffff; /* Solid White */
+            border: none;
+            border-top: 5px solid #9333ea; /* Purple Top Border */
             border-radius: 32px; padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
-            width: 100%; max-width: 480px; color: #f9fafb; /* Světlejší text */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            width: 100%; max-width: 480px; color: #0f172a;
             margin: 0 auto;
         }
         .work-card h1 { 
-            color: #ffffff; margin-bottom: 32px; 
+            color: #7e22ce; margin-bottom: 32px; 
             font-size: 2rem; font-weight: 800; text-align: center;
             letter-spacing: -1px;
         }
+        
+        /* Výsledek - Green Gradient */
         .work-res {
-            font-size: 3rem; font-weight: 800; text-align: center; /* Změna z 900 na 800 */
-            background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+            font-size: 3.5rem; font-weight: 900; text-align: center;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 4px 15px rgba(52, 211, 153, 0.25);
+            margin-top: 4px;
         }
+        
         .work-slider { 
             -webkit-appearance: none; width: 100%; background: transparent; 
-            height: 48px; /* Zvětšení pro snazší dotyk */
+            height: 48px;
             cursor: pointer;
             touch-action: pan-y;
         }
         .work-slider::-webkit-slider-runnable-track { 
-            height: 14px; /* Tlustší stopa */
-            background: rgba(0,0,0,0.3);
-            border-radius: 7px;
+            height: 12px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
         }
         .work-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 38px; width: 38px; border-radius: 50%; /* Větší thumb */
-            background: linear-gradient(135deg, #60A5FA, #3B82F6);
-            margin-top: -12px; 
-            box-shadow: 0 6px 15px rgba(96, 165, 250, 0.3);
+            -webkit-appearance: none; height: 32px; width: 32px; border-radius: 50%;
+            background: #9333ea; /* Purple Thumb */
+            margin-top: -11px; 
+            box-shadow: 0 4px 10px rgba(147, 51, 234, 0.4);
+            border: 4px solid #ffffff;
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .work-slider:active::-webkit-slider-thumb {
-            transform: scale(1.1);
+            transform: scale(1.2);
+            background: #7e22ce;
         }
+        
         .work-disp { 
-            font-size: 1.75rem; font-weight: 600; /* Jemnější font */
-            padding: 14px; 
-            background: rgba(0,0,0,0.2);
+            font-size: 1.5rem; font-weight: 700;
+            padding: 16px; 
+            background: #faf5ff; /* Light purple tint */
             border-radius: 16px; text-align: center; 
-            color: #f9fafb; margin-top: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
+            color: #334155; margin-top: 12px;
+            border: 1px solid #e9d5ff;
         }
         label {
-            color: #d1d5db; /* Světlejší barva popisků */
+            color: #64748b; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
         }
 
         /* === MOBILNÍ OPTIMALIZACE === */
@@ -108,24 +112,16 @@
             .work-card {
                 padding: 24px;
                 border-radius: 24px;
-                background: rgba(30, 35, 50, 0.8); /* Mírně vyšší opacita na mobilu */
             }
             .work-card h1 {
-                font-size: 1.5rem; /* 24px */
+                font-size: 1.5rem;
                 margin-bottom: 24px;
             }
-            .mb-6 { margin-bottom: 1.25rem; } /* Menší mezery */
+            .mb-6 { margin-bottom: 1.5rem; }
             .mt-10 { margin-top: 2rem; }
             
-            label.text-lg { font-size: 1rem; } /* 16px */
-
-            .work-disp {
-                font-size: 1.5rem; /* 24px */
-                padding: 12px;
-            }
-            .work-res {
-                font-size: 2.25rem; /* 36px */
-            }
+            .work-disp { font-size: 1.25rem; padding: 12px; }
+            .work-res { font-size: 2.75rem; }
         }
     </style>
 </head>

@@ -7,25 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        /* === ZÁKLADNÍ NASTAVENÍ === */
+        /* === ZÁKLADNÍ NASTAVENÍ (LIGHT MODE & NO SCROLL) === */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%; overflow-x: hidden; 
-            font-family: 'Inter', sans-serif; background: #0a0e1a; color: white;
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Pastel Gradient */
+            color: #1e293b;
         }
 
-        /* === ANIMOVANÉ POZADÍ === */
-        .animated-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
-            animation: bgShift 20s ease-in-out infinite;
-        }
-        @keyframes bgShift {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
+        .animated-bg { display: none; }
 
         /* === HUB SCREEN (Landing Page) === */
         .hub-header { 
@@ -33,12 +24,14 @@
             animation: fadeInDown 0.6s ease-out;
         }
         .hub-header h1 { 
-            font-size: 2.5rem; font-weight: 900; 
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 2.75rem; font-weight: 900; 
+            color: #ffffff; /* White text on colorful bg looks better for header, or dark? Let's stick to dark for contrast requested or white with shadow? */
+            /* User requested high contrast. Dark text on light pastel is good. But header on gradient... */
+            color: #1e293b;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.5);
             margin-bottom: 8px; letter-spacing: -2px;
         }
-        .hub-header p { color: #94a3b8; font-size: 1rem; font-weight: 500; }
+        .hub-header p { color: #475569; font-size: 1.1rem; font-weight: 600; }
 
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
@@ -52,17 +45,17 @@
         }
 
         .app-card {
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #ffffff; /* Solid White */
+            border: none;
             border-radius: 28px; padding: 28px;
             display: flex; align-items: center; gap: 20px;
             cursor: pointer; position: relative; overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(20px);
             animation: fadeInUp 0.6s ease-out backwards;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Stronger shadow */
         }
         
-        /* Časování animace pro postupné zobrazení */
+        /* Časování animace */
         .app-card:nth-child(1) { animation-delay: 0.1s; }
         .app-card:nth-child(2) { animation-delay: 0.2s; }
         .app-card:nth-child(3) { animation-delay: 0.3s; }
@@ -74,58 +67,51 @@
         }
 
         .app-card:hover { 
-            background: rgba(30, 41, 59, 0.6); 
             transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
         }
         .app-card:active { transform: translateY(-2px) scale(0.98); }
 
+        /* Levý barevný pruh */
         .app-card::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
             transition: width 0.3s;
         }
-        .app-card:hover::before { width: 6px; }
+        .app-card:hover::before { width: 10px; }
 
-        /* Styly pro jednotlivé karty */
-        .card-lol::before { 
-            background: linear-gradient(180deg, #C8AA6E 0%, #F0E6D2 100%);
-            box-shadow: 3px 0 20px rgba(200, 170, 110, 0.5);
-        }
-        .card-work::before { 
-            background: linear-gradient(180deg, #9333ea 0%, #c084fc 100%);
-            box-shadow: 3px 0 20px rgba(147, 51, 234, 0.5);
-        }
-        .card-gym::before { 
-            background: linear-gradient(180deg, #667eea 0%, #818cf8 100%);
-            box-shadow: 3px 0 20px rgba(102, 126, 234, 0.5);
-        }
-        /* Nová oranžová karta pro Odstávky */
-        .card-outage::before { 
-            background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-            box-shadow: 3px 0 20px rgba(245, 158, 11, 0.5);
-        }
+        /* Barvy karet */
+        .card-lol::before { background: linear-gradient(to bottom, #f6d365, #fda085); }
+        .card-work::before { background: linear-gradient(to bottom, #a18cd1, #fbc2eb); }
+        .card-gym::before { background: linear-gradient(to bottom, #89f7fe, #66a6ff); }
+        .card-outage::before { background: linear-gradient(to bottom, #ff9a9e, #fecfef); }
 
         .card-icon {
             width: 58px; height: 58px; border-radius: 18px;
             display: flex; align-items: center; justify-content: center;
             font-size: 28px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: transform 0.3s;
         }
+        
+        /* Specifické pozadí ikon */
+        .card-lol .card-icon { background: #fffbeb; color: #d97706; }
+        .card-work .card-icon { background: #faf5ff; color: #9333ea; }
+        .card-gym .card-icon { background: #eff6ff; color: #2563eb; }
+        .card-outage .card-icon { background: #fff7ed; color: #ea580c; }
+
         .app-card:hover .card-icon { transform: scale(1.1) rotate(5deg); }
 
         .card-content { flex: 1; }
         .card-content h2 { 
-            font-weight: 700; font-size: 1.25rem; margin-bottom: 4px;
-            letter-spacing: -0.5px;
+            font-weight: 800; font-size: 1.25rem; margin-bottom: 4px;
+            letter-spacing: -0.5px; color: #1e293b;
         }
-        .card-content p { color: #94a3b8; font-size: 0.875rem; }
+        .card-content p { color: #64748b; font-size: 0.875rem; font-weight: 600; }
 
         .card-arrow { 
-            color: #64748b; font-size: 1.5rem;
-            transition: transform 0.3s;
+            color: #cbd5e1; font-size: 1.5rem;
+            transition: all 0.3s;
         }
-        .app-card:hover .card-arrow { transform: translateX(4px); }
+        .app-card:hover .card-arrow { transform: translateX(4px); color: #94a3b8; }
     </style>
 </head>
 <body>

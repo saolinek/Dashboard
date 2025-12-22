@@ -7,80 +7,92 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        /* === ZÁKLADNÍ NASTAVENÍ === */
+        /* === ZÁKLADNÍ NASTAVENÍ (LIGHT MODE & NO SCROLL) === */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%; overflow-x: hidden; 
-            font-family: 'Inter', sans-serif; background: #0a0e1a; color: white;
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%); /* Gold/Orange Pastel */
+            color: #1e293b;
         }
-        .animated-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
-            animation: bgShift 20s ease-in-out infinite;
-        }
-        @keyframes bgShift {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
+        .animated-bg { display: none; }
+        
         #nav-header {
             position: fixed; top: 0; left: 0; width: 100%; height: 70px;
             z-index: 9999; display: flex; align-items: center; padding: 0 24px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+            background: rgba(255, 255, 255, 0.2); /* Semi-transparent */
             backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
         }
         #back-btn {
             pointer-events: auto; cursor: pointer;
             width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.15);
+            background: #ffffff; 
+            border: 1px solid #e2e8f0;
             display: flex; align-items: center; justify-content: center;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            color: white; font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: #475569; font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        #back-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-3px); }
+        #back-btn:hover { background: #fffbeb; transform: translateX(-3px); }
         #back-btn:active { transform: scale(0.92) translateX(-3px); }
+        
         .screen-content {
             padding: 24px; padding-top: 90px; min-height: 100vh;
             animation: fadeInPage 0.5s ease-out;
         }
-        @keyframes fadeInPage {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        /* === LOL APP STYLY === */
+        @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* === LOL APP STYLY (Light + Gold/Blue Theme) === */
         .container-lol {
-            background: linear-gradient(145deg, #0A1428, #010A13); 
-            border: 1px solid rgba(11, 198, 227, 0.2);
-            box-shadow: 0 8px 32px rgba(11, 198, 227, 0.15);
+            background: #ffffff; /* Solid White */
+            border: none;
+            border-top: 5px solid #d97706; /* Gold Top Border */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
             border-radius: 24px; padding: 32px; max-width: 440px; margin: 0 auto;
         }
         #app-lol .title-font { 
-            font-family: 'Cinzel', serif; font-weight: 700; color: #F0E6D2;
-            text-shadow: 0 0 20px rgba(11, 198, 227, 0.3);
+            font-family: 'Cinzel', serif; font-weight: 700; color: #d97706;
+            text-shadow: none; text-align: center; font-size: 1.5rem;
         }
+        
+        /* Dekorativní linka */
+        .divider {
+            height: 2px; margin: 24px 0;
+            background: linear-gradient(to right, transparent, #fbbf24, transparent);
+        }
+
+        label {
+            display: block; font-size: 0.75rem; font-weight: 700; 
+            color: #64748b; text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 8px; margin-top: 24px;
+        }
+        label:first-of-type { margin-top: 0; }
+
         #app-lol input {
-            background: rgba(1, 10, 19, 0.6); 
-            border: 1px solid rgba(44, 58, 75, 0.8);
-            color: #CDD2D6; width: 100%; padding: 14px; 
-            border-radius: 12px; margin-top: 8px;
-            font-size: 1rem; transition: all 0.3s;
+            background: #fffbeb; /* Very light orange/yellow tint */
+            border: 1px solid #e2e8f0;
+            color: #0f172a; width: 100%; padding: 16px; 
+            border-radius: 12px;
+            font-size: 1.1rem; transition: all 0.3s;
+            font-family: 'Inter', sans-serif; font-weight: 600;
         }
         #app-lol input:focus { 
-            outline: none; border-color: #0BC6E3;
-            box-shadow: 0 0 0 3px rgba(11, 198, 227, 0.1);
+            outline: none; border-color: #d97706; background: #fff;
+            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1);
         }
+        
         #app-lol .res-val { 
-            font-family: 'Cinzel', serif; font-size: 3.5rem; 
-            color: #0BC6E3; text-align: center; margin-top: 16px;
-            text-shadow: 0 0 30px rgba(11, 198, 227, 0.4);
-            animation: glow 2s ease-in-out infinite;
+            font-family: 'Cinzel', serif; font-size: 4rem; 
+            color: #0891b2; /* Hextech Blue for contrast */
+            text-align: center; margin-top: 8px;
+            font-weight: 700;
         }
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 20px rgba(11, 198, 227, 0.4); }
-            50% { text-shadow: 0 0 40px rgba(11, 198, 227, 0.6); }
+        
+        .res-label {
+            text-align: center; font-size: 0.75rem; font-weight: 700;
+            color: #94a3b8; letter-spacing: 0.1em; text-transform: uppercase;
+            margin-top: 32px;
         }
     </style>
 </head>
