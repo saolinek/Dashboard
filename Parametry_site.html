@@ -55,9 +55,34 @@
         }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* Animace pro výsledky */
         .fade-in { animation: fadeIn 0.5s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === ANIMACE TOKU === */
+        .flow-line {
+            stroke-dasharray: 8, 4;
+            animation: flowAnim 1s linear infinite;
+        }
+        .flow-line-reverse {
+            stroke-dasharray: 8, 4;
+            animation: flowAnimReverse 1s linear infinite;
+        }
+        /* Pomalé kroužení pro jalovinu */
+        .flow-rotate {
+            transform-origin: center;
+            animation: rotateAnim 3s linear infinite;
+        }
+
+        @keyframes flowAnim {
+            to { stroke-dashoffset: -12; }
+        }
+        @keyframes flowAnimReverse {
+            to { stroke-dashoffset: 12; }
+        }
+        @keyframes rotateAnim {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
         /* Mobilní úpravy pro header */
         @media (max-width: 520px) {
@@ -128,10 +153,12 @@
                 <!-- VÝSLEDKY -->
                 <div id="results" class="hidden space-y-2 pt-1 border-t border-slate-100">
                     
-                    <!-- INFO O STAVU -->
-                    <div class="flex justify-between items-center px-2">
-                         <div class="text-[10px] font-bold text-slate-400 uppercase">Provozní režim</div>
-                         <div id="statusLabel" class="text-xs font-black text-slate-800 uppercase tracking-wide">-</div>
+                    <!-- INFO O STAVU (Jistota odebrána) -->
+                    <div class="flex justify-between items-end px-2">
+                         <div>
+                             <div class="text-[10px] font-bold text-slate-400 uppercase">Provozní režim</div>
+                             <div id="statusLabel" class="text-xs font-black text-slate-800 uppercase tracking-wide leading-none">-</div>
+                         </div>
                     </div>
 
                     <!-- GRAFICKÝ VÝVODOVÝ INDIKÁTOR (SVG) -->
@@ -148,7 +175,6 @@
                             <rect x="0" y="43" width="280" height="4" fill="#f1f5f9" rx="2" />
 
                             <!-- VÝVOD (Centrální prvek) -->
-                            <!-- Reprezentuje fyzický kabel/pole -->
                             <g transform="translate(120, 20)">
                                 <!-- Kabel/Sběrnice -->
                                 <rect x="0" y="0" width="40" height="50" rx="4" fill="#fff" stroke="#64748b" stroke-width="3" />
@@ -156,34 +182,56 @@
                                 <text x="20" y="65" font-size="9" fill="#64748b" text-anchor="middle" font-weight="bold">VÝVOD</text>
                             </g>
 
-                            <!-- ŠIPKY TOKU (Dynamické) -->
+                            <!-- ŠIPKY TOKU (Dynamické + Animované) -->
                             
                             <!-- EXPORT (Ven, Doprava) -->
                             <g id="groupExport" class="hidden">
-                                <line x1="170" y1="45" x2="210" y2="45" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill" />
+                                <line x1="170" y1="45" x2="210" y2="45" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill flow-line" />
                                 <line x1="220" y1="45" x2="260" y2="45" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill opacity-50" />
                             </g>
 
                             <!-- IMPORT (Do, Doleva) -->
                             <g id="groupImport" class="hidden">
-                                <line x1="110" y1="45" x2="70" y2="45" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill" />
+                                <line x1="110" y1="45" x2="70" y2="45" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill flow-line-reverse" />
                                 <line x1="60" y1="45" x2="20" y2="45" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill opacity-50" />
                             </g>
 
                             <!-- JALOVINA (Cirkulace) -->
                             <g id="groupReactive" class="hidden">
-                                <path d="M 100 35 Q 90 20, 110 10" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#arrowHead)" class="arrow-fill" />
-                                <path d="M 180 55 Q 190 70, 170 80" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#arrowHead)" class="arrow-fill" />
-                                <text x="140" y="85" font-size="8" fill="#f59e0b" text-anchor="middle">JALOVÝ TOK</text>
+                                <!-- Animace rotace pro jalovinu -->
+                                <g class="flow-rotate" style="transform-origin: 105px 25px">
+                                    <path d="M 100 35 Q 90 20, 110 10" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#arrowHead)" class="arrow-fill" />
+                                </g>
+                                <g class="flow-rotate" style="transform-origin: 180px 65px; animation-direction: reverse;">
+                                    <path d="M 180 55 Q 190 70, 170 80" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#arrowHead)" class="arrow-fill" />
+                                </g>
+                                <!-- Text JALOVÝ TOK byl odebrán -->
                             </g>
                         </svg>
                     </div>
 
                     <!-- TEXTOVÁ INTERPRETACE -->
-                    <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
+                    <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm space-y-2">
                         <p id="flowDesc" class="text-xs text-slate-700 font-bold leading-relaxed text-center">
                             -
                         </p>
+                        <!-- TECHNICKÉ "PROČ" + PŘÍČINY -->
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                            <div class="flex items-center gap-1.5 justify-center mb-1">
+                                <span class="text-[9px] text-slate-400 uppercase font-bold">Důvod:</span>
+                                <span id="reasonText" class="text-[9px] text-slate-600 italic">
+                                    -
+                                </span>
+                            </div>
+                            
+                            <!-- MOŽNÉ PŘÍČINY -->
+                            <div class="border-t border-slate-200 mt-1 pt-1">
+                                <span class="text-[9px] text-slate-400 uppercase font-bold block text-center mb-0.5">Možné příčiny / Vlivy v síti</span>
+                                <ul id="causesList" class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
+                                    <li>-</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- DOPLŇKOVÉ INFO -->
@@ -216,6 +264,8 @@
             const resultsDiv = document.getElementById('results');
             const statusLabel = document.getElementById('statusLabel');
             const flowDesc = document.getElementById('flowDesc');
+            const reasonText = document.getElementById('reasonText');
+            const causesList = document.getElementById('causesList');
             const valLoad = document.getElementById('valLoad');
             const valDom = document.getElementById('valDom');
             
@@ -235,59 +285,98 @@
             // === 1. HEURISTIKA SMĚRU ===
             let flowState = "UNKNOWN"; 
             
-            const ratioP = S > 0 ? Math.abs(P) / S : 0;
+            const ratioP = S > 0 ? Math.abs(P) / S : 0; 
             const ratioQ = S > 0 ? Math.abs(Q) / S : 0;
 
             if (S === 0 || (P === 0 && Q === 0)) {
                 flowState = "IDLE";
-            } else if (ratioP < 0.15) {
+            } else if (ratioP < 0.2) {
                 flowState = "REACTIVE";
             } else if (P > 0) {
-                flowState = "EXPORT"; // Standardní zátěž = Energie teče z rozvodny ven
+                flowState = "EXPORT"; 
             } else {
-                flowState = "IMPORT"; // Výroba = Energie teče do rozvodny
+                flowState = "IMPORT";
             }
 
-            // === 2. VIZUALIZACE ===
+            // === 2. VIZUALIZACE & TEXT ===
             let color = "#94a3b8";
             let statusText = "Neaktivní";
             let desc = "Bez významného toku.";
+            let reason = "";
+            let causes = [];
 
             if (flowState === "EXPORT") {
-                // TOK VEN Z ROZVODNY (Zelená dle zadání)
                 color = "#10b981"; 
                 statusText = "Tok VEN (Zátěž)";
                 groupExport.classList.remove('hidden');
                 desc = "Tímto vývodem převažuje tok energie VEN Z ROZVODNY.";
+                reason = "Činný výkon P je kladný a převažuje.";
+                causes = [
+                    "Běžná odběrová zátěž (domácnosti, firmy)",
+                    "Průmyslový odběr",
+                    "Nabíhající motory",
+                    "Zatížení vedení"
+                ];
                 
             } else if (flowState === "IMPORT") {
-                // TOK DO ROZVODNY (Modrá dle zadání)
                 color = "#3b82f6"; 
                 statusText = "Tok DO (Zdroj)";
                 groupImport.classList.remove('hidden');
                 desc = "Vývod se chová jako zdroj. Energie přitéká DO ROZVODNY.";
+                reason = "Činný výkon P je záporný (přetok).";
+                causes = [
+                    "FVE na vývodu (sluneční den)",
+                    "MVE nebo kogenerace",
+                    "Lokální výrobna s přetokem",
+                    "Zvýšené napětí v síti"
+                ];
 
             } else if (flowState === "REACTIVE") {
-                // JALOVINA
                 color = "#f59e0b"; 
                 statusText = "Jalová cirkulace";
                 groupReactive.classList.remove('hidden');
                 desc = "Vývod je zatížen převážně jalovým proudem. Žádný efektivní přenos.";
+                reason = "Poměr činného výkonu k celkovému je velmi nízký (Q >> P).";
+                causes = [
+                    "Kompenzační baterie",
+                    "Dlouhé kabelové vedení (kapacitní proud)",
+                    "Transformátor naprázdno (magnetizace)",
+                    "Regulace napětí v síti",
+                    "Nízký odběr při zapnutém zařízení"
+                ];
 
             } else {
                 statusText = "Bez zatížení";
                 desc = "Vývod je pod napětím, ale neteče proud.";
+                reason = "Proud je nulový.";
+                causes = [
+                    "Vývod pod napětím bez zátěže",
+                    "Odpojený odběr / vypnutý jistič",
+                    "Příprava na manipulaci"
+                ];
             }
 
-            // Aplikace barev
+            // Aplikace změn
             arrowFills.forEach(el => {
                 if(el.tagName === 'line' || el.tagName === 'path') el.setAttribute('stroke', color);
                 if(el.tagName === 'path' && el.getAttribute('fill') === 'currentColor') el.setAttribute('fill', color);
             });
+            
             statusLabel.innerText = statusText;
             statusLabel.style.color = color;
+            
             flowDesc.innerText = desc;
             flowDesc.style.color = color;
+
+            reasonText.innerText = reason;
+            
+            // Vypsání příčin
+            causesList.innerHTML = "";
+            causes.forEach(cause => {
+                const li = document.createElement("li");
+                li.innerText = cause;
+                causesList.appendChild(li);
+            });
 
             // Doplňkové hodnoty
             valLoad.innerText = I.toFixed(1) + " A";
