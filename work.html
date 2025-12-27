@@ -165,20 +165,50 @@
             const aDis = document.getElementById('arrivalDisplay');
             const sDis = document.getElementById('saldoDisplay');
             const dDis = document.getElementById('departureDisplay');
+            const W_KEY = 'work_time_state';
 
             function minToTime(m) {
                 return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
             }
+
+            function saveState() {
+                localStorage.setItem(W_KEY, JSON.stringify({
+                    time: tSli.value,
+                    saldo: sSli.value
+                }));
+            }
+
+            function loadState() {
+                try {
+                    const data = JSON.parse(localStorage.getItem(W_KEY));
+                    if (data && data.time && data.saldo) {
+                        tSli.value = data.time;
+                        sSli.value = data.saldo;
+                    }
+                } catch (e) {
+                    console.error("Failed to load state", e);
+                }
+            }
+
             function updateWork() {
                 const arr = parseInt(tSli.value);
                 const sal = parseFloat(sSli.value);
+                
                 aDis.textContent = minToTime(arr);
                 sDis.textContent = `${sal >= 0 ? '+' : ''}${sal.toFixed(2)} h`;
+                
                 const dep = arr + 450 + 30 - (sal * 60);
                 dDis.textContent = minToTime(Math.round(dep % 1440));
+                
+                saveState();
             }
+
+            // Načíst uložená data před prvním renderem
+            loadState();
+
             tSli.addEventListener('input', updateWork);
             sSli.addEventListener('input', updateWork);
+            
             updateWork(); // Spustit hned při načtení
         }
     </script>

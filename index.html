@@ -7,59 +7,119 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        /* === ZÁKLADNÍ NASTAVENÍ (LIGHT MODE & NO SCROLL) === */
+        /* === ZÁKLADNÍ NASTAVENÍ === */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; 
+            margin: 0; padding: 0; 
+            min-height: 100dvh; /* Dynamic viewport height */
+            width: 100%; 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Pastel Gradient */
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             color: #1e293b;
+            /* Flex pro centrování obsahu */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .animated-bg { display: none; }
 
-        /* === HUB SCREEN (Landing Page) === */
+        /* === HLAVNÍ KONTEJNER === */
+        #hub-wrapper {
+            width: 100%;
+            max-width: 1000px; /* Širší pro desktop grid */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            /* Zajistí, že se obsah vejde vertikálně, pokud je místo */
+            max-height: 100dvh;
+            overflow-y: auto; /* Scroll jen pokud je nutné */
+        }
+
+        /* === HLAVIČKA === */
         .hub-header { 
-            text-align: center; margin-bottom: 48px; margin-top: 20px;
+            text-align: center; 
+            margin-bottom: 32px; 
+            margin-top: 10px;
+            flex-shrink: 0; /* Hlavička se nesmršťuje */
             animation: fadeInDown 0.6s ease-out;
         }
         .hub-header h1 { 
-            font-size: 2.75rem; font-weight: 900; 
-            color: #ffffff; /* White text on colorful bg looks better for header, or dark? Let's stick to dark for contrast requested or white with shadow? */
-            /* User requested high contrast. Dark text on light pastel is good. But header on gradient... */
+            font-size: 2.5rem; 
+            font-weight: 900; 
             color: #1e293b;
             text-shadow: 0 1px 2px rgba(255,255,255,0.5);
-            margin-bottom: 8px; letter-spacing: -2px;
+            margin-bottom: 4px; 
+            letter-spacing: -2px;
+            line-height: 1.1;
         }
-        .hub-header p { color: #475569; font-size: 1.1rem; font-weight: 600; }
+        .hub-header p { 
+            color: #475569; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            margin: 0;
+        }
 
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* === KARTY APPLIKACÍ (Menu) === */
+        /* === GRID KARET (RESPONSIVNÍ) === */
         .app-grid {
-            display: grid; grid-template-columns: 1fr; gap: 20px;
-            width: 100%; max-width: 440px; padding-bottom: 60px;
+            display: grid; 
+            gap: 16px;
+            width: 100%; 
+            /* Mobile First: 1 sloupec */
+            grid-template-columns: 1fr;
+            /* Tablet a větší: automatické řazení */
+            justify-content: center;
+            padding-bottom: 20px;
         }
 
+        /* Tablet a Desktop: 2 sloupce pro úsporu výšky */
+        @media (min-width: 640px) {
+            .app-grid {
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 800px;
+            }
+            /* Poslední lichá karta (Analyzátor) na střed */
+            .app-card:last-child:nth-child(odd) {
+                grid-column: span 2;
+                max-width: 50%;
+                margin: 0 auto;
+                width: 100%;
+            }
+        }
+
+        /* === KARTA APLIKACE === */
         .app-card {
-            background: #ffffff; /* Solid White */
+            background: #ffffff;
             border: none;
-            border-radius: 28px; padding: 28px;
-            display: flex; align-items: center; gap: 20px;
-            cursor: pointer; position: relative; overflow: hidden;
+            border-radius: 20px; /* Mírně menší radius pro kompaktnost */
+            padding: 20px;
+            display: flex; 
+            align-items: center; 
+            gap: 16px;
+            cursor: pointer; 
+            position: relative; 
+            overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             animation: fadeInUp 0.6s ease-out backwards;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+            min-height: 90px; /* Konzistentní výška */
         }
         
-        /* Časování animace */
+        /* Animace karet */
         .app-card:nth-child(1) { animation-delay: 0.1s; }
         .app-card:nth-child(2) { animation-delay: 0.2s; }
         .app-card:nth-child(3) { animation-delay: 0.3s; }
         .app-card:nth-child(4) { animation-delay: 0.4s; }
+        .app-card:nth-child(5) { animation-delay: 0.5s; }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
@@ -68,27 +128,29 @@
 
         .app-card:hover { 
             transform: translateY(-4px);
-            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
         .app-card:active { transform: translateY(-2px) scale(0.98); }
 
         /* Levý barevný pruh */
         .app-card::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
             transition: width 0.3s;
         }
-        .app-card:hover::before { width: 10px; }
+        .app-card:hover::before { width: 8px; }
 
         /* Barvy karet */
         .card-lol::before { background: linear-gradient(to bottom, #f6d365, #fda085); }
         .card-work::before { background: linear-gradient(to bottom, #a18cd1, #fbc2eb); }
         .card-gym::before { background: linear-gradient(to bottom, #89f7fe, #66a6ff); }
         .card-outage::before { background: linear-gradient(to bottom, #ff9a9e, #fecfef); }
+        .card-energy::before { background: linear-gradient(to bottom, #6ee7b7, #10b981); }
 
         .card-icon {
-            width: 58px; height: 58px; border-radius: 18px;
+            width: 50px; height: 50px; border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 28px; 
+            font-size: 24px; 
+            flex-shrink: 0;
             transition: transform 0.3s;
         }
         
@@ -97,65 +159,87 @@
         .card-work .card-icon { background: #faf5ff; color: #9333ea; }
         .card-gym .card-icon { background: #eff6ff; color: #2563eb; }
         .card-outage .card-icon { background: #fff7ed; color: #ea580c; }
+        .card-energy .card-icon { background: #ecfdf5; color: #10b981; }
 
         .app-card:hover .card-icon { transform: scale(1.1) rotate(5deg); }
 
-        .card-content { flex: 1; }
+        .card-content { flex: 1; min-width: 0; /* Zabraňuje přetečení textu */ }
         .card-content h2 { 
-            font-weight: 800; font-size: 1.25rem; margin-bottom: 4px;
+            font-weight: 800; font-size: 1.1rem; margin: 0 0 2px 0;
             letter-spacing: -0.5px; color: #1e293b;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .card-content p { color: #64748b; font-size: 0.875rem; font-weight: 600; }
+        .card-content p { 
+            color: #64748b; font-size: 0.8rem; font-weight: 600; margin: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
 
         .card-arrow { 
-            color: #cbd5e1; font-size: 1.5rem;
+            color: #cbd5e1; font-size: 1.25rem;
             transition: all 0.3s;
         }
         .app-card:hover .card-arrow { transform: translateX(4px); color: #94a3b8; }
+
+        /* Media query pro velmi malé displeje (iPhone SE apod.) */
+        @media (max-height: 700px) {
+            .hub-header { margin-bottom: 20px; }
+            .hub-header h1 { font-size: 2rem; }
+            .app-card { padding: 16px; min-height: 80px; }
+            .card-icon { width: 44px; height: 44px; font-size: 20px; }
+        }
     </style>
 </head>
 <body>
     <div class="animated-bg"></div>
 
-    <div id="hub-wrapper" style="padding: 40px 24px; display: flex; flex-direction: column; align-items: center;">
+    <div id="hub-wrapper">
         <div class="hub-header">
             <h1>Dashboard</h1>
-            <p>Vyber si aplikaci</p>
+            <p>Centrála aplikací</p>
         </div>
 
         <div class="app-grid">
-            <a href="lol.html" class="app-card card-lol" style="text-decoration: none;">
-                <div class="card-icon" style="background: linear-gradient(135deg, rgba(200, 170, 110, 0.3), rgba(200, 170, 110, 0.1)); color: #F0E6D2;">⚔️</div>
+            <a href="lol.html" class="app-card card-lol">
+                <div class="card-icon">⚔️</div>
                 <div class="card-content">
-                    <h2 style="color: #F0E6D2;">LoL</h2>
-                    <p>Kalkulačka průraznosti</p>
+                    <h2>LoL Calc</h2>
+                    <p>Průraznost & DMG</p>
                 </div>
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="work.html" class="app-card card-work" style="text-decoration: none;">
-                <div class="card-icon" style="background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(147, 51, 234, 0.1)); color: #e9d5ff;">🕐</div>
+            <a href="work.html" class="app-card card-work">
+                <div class="card-icon">🕐</div>
                 <div class="card-content">
-                    <h2 style="color: #e9d5ff;">Pracovní Doba</h2>
-                    <p>V kolik jít domů</p>
+                    <h2>Práce</h2>
+                    <p>Evidence docházky</p>
                 </div>
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="gym.html" class="app-card card-gym" style="text-decoration: none;">
-                <div class="card-icon" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(102, 126, 234, 0.1)); color: #bfdbfe;">💪</div>
+            <a href="gym.html" class="app-card card-gym">
+                <div class="card-icon">💪</div>
                 <div class="card-content">
-                    <h2 style="color: #bfdbfe;">Fitko</h2>
-                    <p>Checklist cviků</p>
+                    <h2>Fitko</h2>
+                    <p>Tréninkový plán</p>
                 </div>
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="Odstavky.html" class="app-card card-outage" style="text-decoration: none;">
-                <div class="card-icon" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(245, 158, 11, 0.1)); color: #fcd34d;">📅</div>
+            <a href="Odstavky.html" class="app-card card-outage">
+                <div class="card-icon">📅</div>
                 <div class="card-content">
-                    <h2 style="color: #fcd34d;">Plánovač Odstávek</h2>
-                    <p>Ověření zákonné lhůty</p>
+                    <h2>Odstávky</h2>
+                    <p>Plánovač lhůt</p>
+                </div>
+                <div class="card-arrow">›</div>
+            </a>
+
+            <a href="Parametry_site.html" class="app-card card-energy">
+                <div class="card-icon">⚡</div>
+                <div class="card-content">
+                    <h2>Analyzátor</h2>
+                    <p>Sítě a FVE</p>
                 </div>
                 <div class="card-arrow">›</div>
             </a>
