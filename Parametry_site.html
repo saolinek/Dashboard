@@ -129,19 +129,19 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="ml-1 mb-1 block text-[10px] font-bold uppercase text-slate-400">Výkon P [MW]</label>
-                            <input type="number" id="valP" placeholder="+/-" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition text-center text-sm">
+                            <input type="number" id="valP" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition text-center text-sm">
                         </div>
                         <div>
                             <label class="ml-1 mb-1 block text-[10px] font-bold uppercase text-slate-400">Jalovina Q [MVAR]</label>
-                            <input type="number" id="valQ" placeholder="+/-" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition text-center text-sm">
+                            <input type="number" id="valQ" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition text-center text-sm">
                         </div>
                         <div>
                             <label class="ml-1 mb-1 block text-[10px] font-bold uppercase text-slate-400">Proud I [A]</label>
-                            <input type="number" id="valI" placeholder="Abs" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition text-center text-sm">
+                            <input type="number" id="valI" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition text-center text-sm">
                         </div>
                         <div>
                             <label class="ml-1 mb-1 block text-[10px] font-bold uppercase text-slate-400">Napětí U [kV]</label>
-                            <input type="number" id="valU" placeholder="Napětí" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition text-center text-sm">
+                            <input type="number" id="valU" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition text-center text-sm">
                         </div>
                     </div>
 
@@ -153,7 +153,7 @@
                 <!-- VÝSLEDKY -->
                 <div id="results" class="hidden space-y-2 pt-1 border-t border-slate-100">
                     
-                    <!-- INFO O STAVU (Jistota odebrána) -->
+                    <!-- INFO O STAVU -->
                     <div class="flex justify-between items-end px-2">
                          <div>
                              <div class="text-[10px] font-bold text-slate-400 uppercase">Provozní režim</div>
@@ -162,7 +162,7 @@
                     </div>
 
                     <!-- GRAFICKÝ VÝVODOVÝ INDIKÁTOR (SVG) -->
-                    <div class="bg-slate-50 rounded-xl border border-slate-100 py-4 relative flex justify-center items-center overflow-hidden">
+                    <div class="bg-slate-50 rounded-xl border border-slate-100 py-3 relative flex flex-col items-center overflow-hidden">
                         <svg width="280" height="90" viewBox="0 0 280 90">
                             <!-- Definitions -->
                             <defs>
@@ -205,21 +205,31 @@
                                 <g class="flow-rotate" style="transform-origin: 180px 65px; animation-direction: reverse;">
                                     <path d="M 180 55 Q 190 70, 170 80" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#arrowHead)" class="arrow-fill" />
                                 </g>
-                                <!-- Text JALOVÝ TOK byl odebrán -->
                             </g>
                         </svg>
+                        
+                        <!-- LEGENDA ŠIPEK -->
+                        <p class="text-[9px] text-slate-400 text-center leading-tight mt-1 max-w-[240px]">
+                            Šipky znázorňují směr TOKU ENERGIE (činný výkon P),<br>nikoli směr střídavého proudu.
+                        </p>
                     </div>
 
                     <!-- TEXTOVÁ INTERPRETACE -->
                     <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm space-y-2">
-                        <p id="flowDesc" class="text-xs text-slate-700 font-bold leading-relaxed text-center">
-                            -
-                        </p>
+                        <div class="text-center">
+                            <p id="flowDesc" class="text-xs text-slate-700 font-bold leading-relaxed inline">
+                                -
+                            </p>
+                            <p id="reactiveExtra" class="text-[10px] text-slate-400 italic mt-1 hidden">
+                                <br>U jalového výkonu nedochází k přenosu energie, proto nemá směr – pouze cirkuluje.
+                            </p>
+                        </div>
+                        
                         <!-- TECHNICKÉ "PROČ" + PŘÍČINY -->
                         <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
-                            <div class="flex items-center gap-1.5 justify-center mb-1">
+                            <div class="flex flex-col items-center mb-1">
                                 <span class="text-[9px] text-slate-400 uppercase font-bold">Důvod:</span>
-                                <span id="reasonText" class="text-[9px] text-slate-600 italic">
+                                <span id="reasonText" class="text-[9px] text-slate-600 italic text-center">
                                     -
                                 </span>
                             </div>
@@ -227,9 +237,9 @@
                             <!-- MOŽNÉ PŘÍČINY -->
                             <div class="border-t border-slate-200 mt-1 pt-1">
                                 <span class="text-[9px] text-slate-400 uppercase font-bold block text-center mb-0.5">Možné příčiny / Vlivy v síti</span>
-                                <ul id="causesList" class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
-                                    <li>-</li>
-                                </ul>
+                                <div id="causesList" class="space-y-1 mt-1">
+                                    <!-- Dynamicky plněno -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -264,6 +274,7 @@
             const resultsDiv = document.getElementById('results');
             const statusLabel = document.getElementById('statusLabel');
             const flowDesc = document.getElementById('flowDesc');
+            const reactiveExtra = document.getElementById('reactiveExtra');
             const reasonText = document.getElementById('reasonText');
             const causesList = document.getElementById('causesList');
             const valLoad = document.getElementById('valLoad');
@@ -281,6 +292,8 @@
             groupExport.classList.add('hidden');
             groupImport.classList.add('hidden');
             groupReactive.classList.add('hidden');
+            reactiveExtra.classList.add('hidden');
+            causesList.innerHTML = "";
 
             // === 1. HEURISTIKA SMĚRU ===
             let flowState = "UNKNOWN"; 
@@ -303,57 +316,72 @@
             let statusText = "Neaktivní";
             let desc = "Bez významného toku.";
             let reason = "";
-            let causes = [];
+            let causesHtml = "";
 
             if (flowState === "EXPORT") {
                 color = "#10b981"; 
                 statusText = "Tok VEN (Zátěž)";
                 groupExport.classList.remove('hidden');
                 desc = "Tímto vývodem převažuje tok energie VEN Z ROZVODNY.";
-                reason = "Činný výkon P je kladný a převažuje.";
-                causes = [
-                    "Běžná odběrová zátěž (domácnosti, firmy)",
-                    "Průmyslový odběr",
-                    "Nabíhající motory",
-                    "Zatížení vedení"
-                ];
+                reason = "Směr určen znaménkem činného výkonu P (kladné).";
+                causesHtml = `<ul class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
+                    <li>Běžná odběrová zátěž (domácnosti, firmy)</li>
+                    <li>Průmyslový odběr</li>
+                    <li>Nabíhající motory</li>
+                    <li>Zatížení vedení</li>
+                </ul>`;
                 
             } else if (flowState === "IMPORT") {
                 color = "#3b82f6"; 
                 statusText = "Tok DO (Zdroj)";
                 groupImport.classList.remove('hidden');
                 desc = "Vývod se chová jako zdroj. Energie přitéká DO ROZVODNY.";
-                reason = "Činný výkon P je záporný (přetok).";
-                causes = [
-                    "FVE na vývodu (sluneční den)",
-                    "MVE nebo kogenerace",
-                    "Lokální výrobna s přetokem",
-                    "Zvýšené napětí v síti"
-                ];
+                reason = "Směr určen znaménkem činného výkonu P (záporné).";
+                causesHtml = `<ul class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
+                    <li>FVE na vývodu (sluneční den)</li>
+                    <li>MVE nebo kogenerace</li>
+                    <li>Lokální výrobna s přetokem</li>
+                    <li>Zvýšené napětí v síti</li>
+                </ul>`;
 
             } else if (flowState === "REACTIVE") {
                 color = "#f59e0b"; 
                 statusText = "Jalová cirkulace";
                 groupReactive.classList.remove('hidden');
+                reactiveExtra.classList.remove('hidden');
                 desc = "Vývod je zatížen převážně jalovým proudem. Žádný efektivní přenos.";
-                reason = "Poměr činného výkonu k celkovému je velmi nízký (Q >> P).";
-                causes = [
-                    "Kompenzační baterie",
-                    "Dlouhé kabelové vedení (kapacitní proud)",
-                    "Transformátor naprázdno (magnetizace)",
-                    "Regulace napětí v síti",
-                    "Nízký odběr při zapnutém zařízení"
-                ];
+                reason = "Znaménko Q určuje indukční / kapacitní charakter, nikoli směr toku.";
+                
+                causesHtml = `
+                    <div class="mb-1">
+                        <span class="text-[8px] text-slate-400 uppercase font-extrabold block text-center">A) ZDROJE JALOVINY NA VÝVODU</span>
+                        <ul class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
+                            <li>transformátor naprázdno (magnetizační proud)</li>
+                            <li>dlouhé kabelové vedení (kapacitní proud)</li>
+                            <li>kompenzační kondenzátory</li>
+                            <li>tlumivky / regulace účiníku</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="text-[8px] text-slate-400 uppercase font-extrabold block text-center">B) VLIVY PROVOZNÍHO STAVU SÍTĚ</span>
+                        <ul class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
+                            <li>nízký odběr při zapnutém zařízení</li>
+                            <li>noční provoz</li>
+                            <li>zvýšené napětí v síti</li>
+                            <li>regulace napětí bez činné zátěže</li>
+                        </ul>
+                    </div>
+                `;
 
             } else {
                 statusText = "Bez zatížení";
                 desc = "Vývod je pod napětím, ale neteče proud.";
                 reason = "Proud je nulový.";
-                causes = [
-                    "Vývod pod napětím bez zátěže",
-                    "Odpojený odběr / vypnutý jistič",
-                    "Příprava na manipulaci"
-                ];
+                causesHtml = `<ul class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
+                    <li>Vývod pod napětím bez zátěže</li>
+                    <li>Odpojený odběr / vypnutý jistič</li>
+                    <li>Příprava na manipulaci</li>
+                </ul>`;
             }
 
             // Aplikace změn
@@ -369,14 +397,7 @@
             flowDesc.style.color = color;
 
             reasonText.innerText = reason;
-            
-            // Vypsání příčin
-            causesList.innerHTML = "";
-            causes.forEach(cause => {
-                const li = document.createElement("li");
-                li.innerText = cause;
-                causesList.appendChild(li);
-            });
+            causesList.innerHTML = causesHtml;
 
             // Doplňkové hodnoty
             valLoad.innerText = I.toFixed(1) + " A";
