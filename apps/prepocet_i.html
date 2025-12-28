@@ -14,11 +14,12 @@
         body, html { 
             margin: 0; padding: 0; 
             min-height: 100vh;
+            height: 100dvh; /* Vynucení výšky */
             width: 100%; 
             font-family: 'Inter', sans-serif; 
             background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
             color: #1e293b;
-            overflow-x: hidden;
+            overflow: hidden; /* Zákaz scrollu */
         }
 
         /* === HLAVIČKA (NAVIGACE) === */
@@ -43,10 +44,11 @@
 
         /* === OBSAH === */
         .screen-content {
-            padding: 24px; padding-top: 90px; 
-            min-height: 100vh;
+            padding: 24px; padding-top: 75px; 
+            height: 100dvh;
             display: flex;
             justify-content: center;
+            align-items: center;
             animation: fadeInPage 0.5s ease-out;
         }
         @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -61,6 +63,9 @@
             max-width: 480px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.5);
+            
+            /* Flex layout pro kartu */
+            display: flex; flex-direction: column; justify-content: space-between;
         }
 
         h1 {
@@ -97,25 +102,15 @@
             background: #ffffff;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-        input:disabled {
-            background: #f1f5f9;
-            color: #94a3b8;
-            border-color: #cbd5e1;
-        }
-
+        
         .result-box {
             padding: 20px;
             border-radius: 16px;
-            margin-top: 16px;
             border: 1px solid transparent;
-        }
-        .result-emerald {
             background: #ecfdf5;
             border-color: #a7f3d0;
-        }
-        .result-blue {
-            background: #eff6ff;
-            border-color: #bfdbfe;
+            text-align: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
         .res-label {
@@ -123,25 +118,45 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
+            color: #059669;
         }
         .res-value {
-            font-size: 2rem;
-            font-weight: 800;
+            font-size: 3.5rem;
+            font-weight: 900;
             line-height: 1;
+            color: #064e3b;
         }
         .res-unit {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-left: 4px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #059669;
+            margin-top: 4px;
         }
-        .res-sub {
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(0,0,0,0.05);
-            opacity: 0.8;
+
+        /* === MOBILNÍ OPTIMALIZACE (< 520px) === */
+        @media (max-width: 520px) {
+            #nav-header { height: 60px; padding: 0 16px; }
+            #back-btn { width: 40px; height: 40px; }
+            .screen-content { padding: 12px; padding-top: 70px; align-items: flex-start; }
+            
+            .calc-card {
+                padding: 20px;
+                border-radius: 20px;
+                height: auto;
+                max-height: calc(100dvh - 80px);
+            }
+            h1 { font-size: 1.5rem; margin-bottom: 16px; }
+            
+            label { font-size: 0.8rem; margin-bottom: 4px; }
+            input { padding: 10px 12px; font-size: 0.95rem; }
+            
+            .result-box { padding: 16px; margin-top: 12px; }
+            .res-value { font-size: 2.5rem; }
+            .res-unit { font-size: 1rem; }
+            
+            .mt-8 { margin-top: 16px; }
+            .leading-relaxed { line-height: 1.4; font-size: 0.7rem; }
         }
     </style>
 </head>
@@ -155,80 +170,69 @@
 
     <div class="screen-content">
         <div class="calc-card">
-            <h1>⚡ Výkon (23 kV)</h1>
+            <h1>⚡ Kalkulačka Výkonu</h1>
             
-            <div class="space-y-5">
-                <!-- Napětí (Fixní - Fázové) -->
-                <div>
-                    <label>Fázové napětí (U)</label>
-                    <input type="text" value="13 280 V" disabled>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Napětí U -->
+                    <div>
+                        <label for="voltage">Napětí U [kV]</label>
+                        <input type="number" id="voltage" value="23" step="1" inputmode="decimal" oninput="calculate()">
+                    </div>
+
+                    <!-- Účiník cos phi -->
+                    <div>
+                        <label for="cosphi">Účiník cos φ</label>
+                        <input type="number" id="cosphi" value="0.95" step="0.01" min="0" max="1" inputmode="decimal" oninput="calculate()">
+                    </div>
                 </div>
 
-                <!-- Proud (Input) -->
+                <!-- Proud I -->
                 <div>
-                    <label for="current">Fázový proud (I) [A]</label>
+                    <label for="current">Proud I [A]</label>
                     <input type="number" id="current" placeholder="Zadejte proud..." inputmode="decimal" oninput="calculate()">
                 </div>
 
                 <div class="h-2"></div>
 
-                <!-- Výsledky -->
-                <div class="grid grid-cols-1 gap-4">
-                    <!-- Činný výkon MW -->
-                    <div class="result-box result-emerald">
-                        <div class="res-label text-emerald-600">Činný výkon (P)</div>
-                        <div class="flex items-baseline text-emerald-900">
-                            <span id="resMW" class="res-value">0</span>
-                            <span class="res-unit">MW</span>
-                        </div>
-                        <div class="res-sub text-emerald-700">
-                            <span id="resKW">0</span> kW
-                        </div>
-                    </div>
-
-                    <!-- Zdánlivý výkon MVA (stejný jako P) -->
-                    <div class="result-box result-blue">
-                        <div class="res-label text-blue-600">Zdánlivý výkon (S)</div>
-                        <div class="flex items-baseline text-blue-900">
-                            <span id="resMVA" class="res-value">0</span>
-                            <span class="res-unit">MVA</span>
-                        </div>
-                        <div class="res-sub text-blue-700">
-                            <span id="resKVA">0</span> kVA
-                        </div>
-                    </div>
+                <!-- Výsledek MW -->
+                <div class="result-box">
+                    <div class="res-label">Činný Výkon (P)</div>
+                    <span id="resMW" class="res-value">0,000</span>
+                    <span class="res-unit">MW</span>
                 </div>
             </div>
 
             <div class="mt-8 text-center text-xs text-gray-500 font-medium leading-relaxed">
-                Výpočet vychází z fázového napětí a fázového proudu.<br>
-                Použito pro provozní odhad výkonu na vývodech VN.
+                P = (U / √3) × I × cos φ × 2<br>
+                Použito pro provozní odhad činného výkonu.
             </div>
         </div>
     </div>
 
     <script>
         function calculate() {
-            // Fázové napětí (cca 23000 / 1.732)
-            const U_faze = 13280; 
+            // Vstupy
+            const U_kv = parseFloat(document.getElementById('voltage').value) || 0;
+            const cosPhi = parseFloat(document.getElementById('cosphi').value) || 0;
             const I = parseFloat(document.getElementById('current').value) || 0;
-
-            // Výpočet výkonu
-            // P = U_faze * I * 2 (faktor 2 pro shodu s provozním odhadem 0.026 MW/A)
-            const P_watts = U_faze * I * 2;
-
-            // Formátování pro MEGA
-            // S = P (bez cosPhi)
-            const valMW = P_watts / 1000000;
-            const valKW = P_watts / 1000;
-
-            document.getElementById('resMVA').innerText = valMW.toLocaleString('cs-CZ', {minimumFractionDigits: 3, maximumFractionDigits: 3});
-            document.getElementById('resMW').innerText = valMW.toLocaleString('cs-CZ', {minimumFractionDigits: 3, maximumFractionDigits: 3});
             
-            // Formátování pro Kilo
-            document.getElementById('resKVA').innerText = valKW.toLocaleString('cs-CZ', {maximumFractionDigits: 1});
-            document.getElementById('resKW').innerText = valKW.toLocaleString('cs-CZ', {maximumFractionDigits: 1});
+            // Fázové napětí (U / √3)
+            const U_faze = (U_kv * 1000) / Math.sqrt(3);
+
+            // Provozní výpočet výkonu (odhad pro 2 fáze / smyčku)
+            // Koeficient 2 zajišťuje shodu s provozním standardem 0.026 MW/A při 23kV
+            const P_watts = U_faze * I * cosPhi * 2;
+
+            // Přepočet na MW
+            const valMW = P_watts / 1000000;
+
+            // Zobrazení (3 desetinná místa)
+            document.getElementById('resMW').innerText = valMW.toLocaleString('cs-CZ', {minimumFractionDigits: 3, maximumFractionDigits: 3});
         }
+        
+        // Init výpočet při načtení
+        calculate();
     </script>
 </body>
 </html>

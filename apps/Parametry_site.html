@@ -85,11 +85,24 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Mobilní úpravy pro header */
+        /* Mobilní úpravy pro header a obsah */
         @media (max-width: 520px) {
             #nav-header { padding: 0 16px; height: 60px; }
             #back-btn { width: 40px; height: 40px; }
-            .screen-content { padding-top: 68px; }
+            .screen-content { padding-top: 68px; padding-bottom: 0; align-items: flex-start; }
+            
+            /* Kompaktní režim pro mobil */
+            .mobile-compact {
+                padding: 12px !important;
+                border-radius: 20px !important;
+            }
+            .mobile-compact h1 { font-size: 1.25rem !important; }
+            .mobile-compact p { font-size: 0.65rem !important; }
+            .mobile-compact .p-5 { padding: 12px !important; }
+            .mobile-compact input { padding: 4px 8px !important; font-size: 0.8rem !important; }
+            .mobile-compact button { py-2 !important; height: 40px !important; font-size: 0.8rem !important; }
+            .mobile-compact svg { height: 70px !important; width: 100% !important; }
+            .mobile-compact .space-y-3 { space-y-2 !important; }
         }
     </style>
 </head>
@@ -107,7 +120,7 @@
 
     <div class="screen-content">
         <!-- HLAVNÍ KARTA APLIKACE -->
-        <div class="w-full max-w-[480px] bg-white/95 backdrop-blur-sm rounded-[32px] shadow-2xl flex flex-col">
+        <div class="w-full max-w-[480px] bg-white/95 backdrop-blur-sm rounded-[32px] shadow-2xl flex flex-col mobile-compact">
             
             <!-- HEADER KARTY -->
             <div class="p-5 pb-2">
@@ -123,7 +136,7 @@
             </div>
 
             <!-- CONTENT -->
-            <div class="p-5 pt-2 space-y-3">
+            <div class="p-5 pt-2 space-y-3 flex-1 flex flex-col justify-between">
                 
                 <!-- VSTUPY -->
                 <div class="space-y-3">
@@ -146,13 +159,13 @@
                         </div>
                     </div>
 
-                    <button onclick="runAnalysis()" class="w-full bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white py-3 rounded-xl font-bold text-sm uppercase tracking-wider shadow-lg shadow-emerald-200 transform active:scale-[0.98] transition-all">
+                    <button onclick="runAnalysis()" class="w-full bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white py-3 rounded-xl font-bold text-sm uppercase tracking-wider shadow-lg shadow-emerald-200 transform active:scale-[0.98] transition-all h-[48px] flex items-center justify-center">
                         Analyzovat Vývod
                     </button>
                 </div>
 
                 <!-- VÝSLEDKY -->
-                <div id="results" class="hidden space-y-2 pt-1 border-t border-slate-100">
+                <div id="results" class="hidden space-y-2 pt-1 border-t border-slate-100 flex-1 overflow-hidden flex flex-col">
                     
                     <!-- INFO O STAVU -->
                     <div class="flex justify-between items-end px-2">
@@ -163,8 +176,8 @@
                     </div>
 
                     <!-- GRAFICKÝ VÝVODOVÝ INDIKÁTOR (SVG) -->
-                    <div class="bg-slate-50 rounded-xl border border-slate-100 py-3 relative flex flex-col items-center overflow-hidden">
-                        <svg width="280" height="90" viewBox="0 0 280 90">
+                    <div class="bg-slate-50 rounded-xl border border-slate-100 py-2 relative flex flex-col items-center overflow-hidden shrink-0">
+                        <svg width="280" height="80" viewBox="0 0 280 80" class="w-full h-auto max-h-[80px]">
                             <!-- Definitions -->
                             <defs>
                                 <marker id="arrowHead" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
@@ -173,10 +186,10 @@
                             </defs>
                             
                             <!-- Pozadí osy (Busbar hint) -->
-                            <rect x="0" y="43" width="280" height="4" fill="#f1f5f9" rx="2" />
+                            <rect x="0" y="38" width="280" height="4" fill="#f1f5f9" rx="2" />
 
                             <!-- VÝVOD (Centrální prvek) -->
-                            <g transform="translate(120, 20)">
+                            <g transform="translate(120, 15)">
                                 <!-- Kabel/Sběrnice -->
                                 <rect x="0" y="0" width="40" height="50" rx="4" fill="#fff" stroke="#64748b" stroke-width="3" />
                                 <line x1="20" y1="5" x2="20" y2="45" stroke="#64748b" stroke-width="2" stroke-dasharray="2,2" />
@@ -187,14 +200,14 @@
                             
                             <!-- EXPORT (Ven, Doprava) -->
                             <g id="groupExport" class="hidden">
-                                <line x1="170" y1="45" x2="210" y2="45" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill flow-line" />
-                                <line x1="220" y1="45" x2="260" y2="45" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill opacity-50" />
+                                <line x1="170" y1="40" x2="210" y2="40" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill flow-line" />
+                                <line x1="220" y1="40" x2="260" y2="40" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill opacity-50" />
                             </g>
 
                             <!-- IMPORT (Do, Doleva) -->
                             <g id="groupImport" class="hidden">
-                                <line x1="110" y1="45" x2="70" y2="45" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill flow-line-reverse" />
-                                <line x1="60" y1="45" x2="20" y2="45" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill opacity-50" />
+                                <line x1="110" y1="40" x2="70" y2="40" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill flow-line-reverse" />
+                                <line x1="60" y1="40" x2="20" y2="40" stroke="currentColor" stroke-width="4" marker-end="url(#arrowHead)" class="arrow-fill opacity-50" />
                             </g>
 
                             <!-- JALOVINA (Cirkulace) -->
@@ -208,50 +221,34 @@
                                 </g>
                             </g>
                         </svg>
-                        
-                        <!-- LEGENDA ŠIPEK -->
-                        <p class="text-[9px] text-slate-400 text-center leading-tight mt-1 max-w-[240px]">
-                            Šipky znázorňují směr TOKU ENERGIE (činný výkon P),<br>nikoli směr střídavého proudu.
-                        </p>
                     </div>
 
                     <!-- TEXTOVÁ INTERPRETACE -->
-                    <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm space-y-2">
+                    <div class="bg-white p-2 rounded-xl border border-slate-100 shadow-sm space-y-1 flex-1 overflow-y-auto">
                         <div class="text-center">
-                            <p id="flowDesc" class="text-xs text-slate-700 font-bold leading-relaxed inline">
+                            <p id="flowDesc" class="text-[10px] text-slate-700 font-bold leading-tight inline">
                                 -
-                            </p>
-                            <p id="reactiveExtra" class="text-[10px] text-slate-400 italic mt-1 hidden">
-                                <br>U jalového výkonu nedochází k přenosu energie, proto nemá směr – pouze cirkuluje.
                             </p>
                         </div>
                         
-                        <!-- TECHNICKÉ "PROČ" + PŘÍČINY -->
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
-                            <div class="flex flex-col items-center mb-1">
-                                <span class="text-[9px] text-slate-400 uppercase font-bold">Důvod:</span>
-                                <span id="reasonText" class="text-[9px] text-slate-600 italic text-center">
+                        <!-- TECHNICKÉ "PROČ" -->
+                        <div class="bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                            <div class="flex flex-col items-center mb-0.5">
+                                <span class="text-[8px] text-slate-400 uppercase font-bold">Důvod:</span>
+                                <span id="reasonText" class="text-[9px] text-slate-600 italic text-center leading-tight">
                                     -
                                 </span>
-                            </div>
-                            
-                            <!-- MOŽNÉ PŘÍČINY -->
-                            <div class="border-t border-slate-200 mt-1 pt-1">
-                                <span class="text-[9px] text-slate-400 uppercase font-bold block text-center mb-0.5">Možné příčiny / Vlivy v síti</span>
-                                <div id="causesList" class="space-y-1 mt-1">
-                                    <!-- Dynamicky plněno -->
-                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- DOPLŇKOVÉ INFO -->
-                    <div class="grid grid-cols-2 gap-2 text-center pt-1">
-                        <div class="bg-slate-50 rounded-lg p-1.5">
+                    <div class="grid grid-cols-2 gap-2 text-center pt-1 shrink-0">
+                        <div class="bg-slate-50 rounded-lg p-1">
                             <span class="text-[8px] uppercase text-slate-400 block font-bold">Zatížení (I)</span>
                             <span id="valLoad" class="text-[10px] font-mono font-bold text-slate-600">-</span>
                         </div>
-                        <div class="bg-slate-50 rounded-lg p-1.5">
+                        <div class="bg-slate-50 rounded-lg p-1">
                             <span class="text-[8px] uppercase text-slate-400 block font-bold">Dominance</span>
                             <span id="valDom" class="text-[10px] font-mono font-bold text-slate-600">-</span>
                         </div>
@@ -275,9 +272,7 @@
             const resultsDiv = document.getElementById('results');
             const statusLabel = document.getElementById('statusLabel');
             const flowDesc = document.getElementById('flowDesc');
-            const reactiveExtra = document.getElementById('reactiveExtra');
             const reasonText = document.getElementById('reasonText');
-            const causesList = document.getElementById('causesList');
             const valLoad = document.getElementById('valLoad');
             const valDom = document.getElementById('valDom');
             
@@ -293,9 +288,7 @@
             groupExport.classList.add('hidden');
             groupImport.classList.add('hidden');
             groupReactive.classList.add('hidden');
-            reactiveExtra.classList.add('hidden');
-            causesList.innerHTML = "";
-
+            
             // === 1. HEURISTIKA SMĚRU ===
             let flowState = "UNKNOWN"; 
             
@@ -317,7 +310,6 @@
             let statusText = "Neaktivní";
             let desc = "Bez významného toku.";
             let reason = "";
-            let causesHtml = "";
 
             if (flowState === "EXPORT") {
                 color = "#10b981"; 
@@ -325,12 +317,6 @@
                 groupExport.classList.remove('hidden');
                 desc = "Tímto vývodem převažuje tok energie VEN Z ROZVODNY.";
                 reason = "Směr určen znaménkem činného výkonu P (kladné).";
-                causesHtml = `<ul class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
-                    <li>Běžná odběrová zátěž (domácnosti, firmy)</li>
-                    <li>Průmyslový odběr</li>
-                    <li>Nabíhající motory</li>
-                    <li>Zatížení vedení</li>
-                </ul>`;
                 
             } else if (flowState === "IMPORT") {
                 color = "#3b82f6"; 
@@ -338,51 +324,18 @@
                 groupImport.classList.remove('hidden');
                 desc = "Vývod se chová jako zdroj. Energie přitéká DO ROZVODNY.";
                 reason = "Směr určen znaménkem činného výkonu P (záporné).";
-                causesHtml = `<ul class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
-                    <li>FVE na vývodu (sluneční den)</li>
-                    <li>MVE nebo kogenerace</li>
-                    <li>Lokální výrobna s přetokem</li>
-                    <li>Zvýšené napětí v síti</li>
-                </ul>`;
 
             } else if (flowState === "REACTIVE") {
                 color = "#f59e0b"; 
                 statusText = "Jalová cirkulace";
                 groupReactive.classList.remove('hidden');
-                reactiveExtra.classList.remove('hidden');
                 desc = "Vývod je zatížen převážně jalovým proudem. Žádný efektivní přenos.";
                 reason = "Znaménko Q určuje indukční / kapacitní charakter, nikoli směr toku.";
                 
-                causesHtml = `
-                    <div class="mb-1">
-                        <span class="text-[8px] text-slate-400 uppercase font-extrabold block text-center">A) ZDROJE JALOVINY NA VÝVODU</span>
-                        <ul class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
-                            <li>transformátor naprázdno (magnetizační proud)</li>
-                            <li>dlouhé kabelové vedení (kapacitní proud)</li>
-                            <li>kompenzační kondenzátory</li>
-                            <li>tlumivky / regulace účiníku</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <span class="text-[8px] text-slate-400 uppercase font-extrabold block text-center">B) VLIVY PROVOZNÍHO STAVU SÍTĚ</span>
-                        <ul class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
-                            <li>nízký odběr při zapnutém zařízení</li>
-                            <li>noční provoz</li>
-                            <li>zvýšené napětí v síti</li>
-                            <li>regulace napětí bez činné zátěže</li>
-                        </ul>
-                    </div>
-                `;
-
             } else {
                 statusText = "Bez zatížení";
                 desc = "Vývod je pod napětím, ale neteče proud.";
                 reason = "Proud je nulový.";
-                causesHtml = `<ul class="text-[9px] text-slate-600 list-disc pl-8 leading-tight">
-                    <li>Vývod pod napětím bez zátěže</li>
-                    <li>Odpojený odběr / vypnutý jistič</li>
-                    <li>Příprava na manipulaci</li>
-                </ul>`;
             }
 
             // Aplikace změn
@@ -398,7 +351,6 @@
             flowDesc.style.color = color;
 
             reasonText.innerText = reason;
-            causesList.innerHTML = causesHtml;
 
             // Doplňkové hodnoty
             valLoad.innerText = I.toFixed(1) + " A";
