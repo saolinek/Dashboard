@@ -6,6 +6,7 @@
     <title>Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="pwa/manifest.json">
     <style>
         /* === ZÁKLADNÍ NASTAVENÍ === */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -127,6 +128,7 @@
         .app-card:nth-child(3) { animation-delay: 0.3s; }
         .app-card:nth-child(4) { animation-delay: 0.4s; }
         .app-card:nth-child(5) { animation-delay: 0.5s; }
+        .app-card:nth-child(6) { animation-delay: 0.6s; }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
@@ -152,6 +154,7 @@
         .card-gym::before { background: linear-gradient(to bottom, #89f7fe, #66a6ff); }
         .card-outage::before { background: linear-gradient(to bottom, #ff9a9e, #fecfef); }
         .card-energy::before { background: linear-gradient(to bottom, #6ee7b7, #10b981); }
+        .card-calc::before { background: linear-gradient(to bottom, #4facfe, #00f2fe); }
 
         .card-icon {
             width: 50px; height: 50px; border-radius: 14px;
@@ -167,6 +170,7 @@
         .card-gym .card-icon { background: #eff6ff; color: #2563eb; }
         .card-outage .card-icon { background: #fff7ed; color: #ea580c; }
         .card-energy .card-icon { background: #ecfdf5; color: #10b981; }
+        .card-calc .card-icon { background: #f0f9ff; color: #0ea5e9; }
 
         .app-card:hover .card-icon { transform: scale(1.1) rotate(5deg); }
 
@@ -207,7 +211,7 @@
         </div>
 
         <div class="app-grid">
-            <a href="lol.html" class="app-card card-lol">
+            <a href="apps/lol.html" class="app-card card-lol">
                 <div class="card-icon">⚔️</div>
                 <div class="card-content">
                     <h2>LoL Calc</h2>
@@ -216,7 +220,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="work.html" class="app-card card-work">
+            <a href="apps/work.html" class="app-card card-work">
                 <div class="card-icon">🕐</div>
                 <div class="card-content">
                     <h2>Práce</h2>
@@ -225,7 +229,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="gym.html" class="app-card card-gym">
+            <a href="apps/gym.html" class="app-card card-gym">
                 <div class="card-icon">💪</div>
                 <div class="card-content">
                     <h2>Fitko</h2>
@@ -234,7 +238,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="Odstavky.html" class="app-card card-outage">
+            <a href="apps/Odstavky.html" class="app-card card-outage">
                 <div class="card-icon">📅</div>
                 <div class="card-content">
                     <h2>Odstávky</h2>
@@ -243,7 +247,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="Parametry_site.html" class="app-card card-energy">
+            <a href="apps/Parametry_site.html" class="app-card card-energy">
                 <div class="card-icon">⚡</div>
                 <div class="card-content">
                     <h2>Analyzátor</h2>
@@ -251,9 +255,27 @@
                 </div>
                 <div class="card-arrow">›</div>
             </a>
+
+            <a href="apps/prepocet_i.html" class="app-card card-calc">
+                <div class="card-icon">🧮</div>
+                <div class="card-content">
+                    <h2>Kalkulačka</h2>
+                    <p>Výkon & Proud</p>
+                </div>
+                <div class="card-arrow">›</div>
+            </a>
         </div>
     </div>
     <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('pwa/service-worker.js', { scope: '/' })
+                    .then(reg => console.log('SW registrován:', reg))
+                    .catch(err => console.log('SW chyba:', err));
+            });
+        }
+
         fetch('https://svatky.adresa.info/json')
             .then(response => response.json())
             .then(data => {

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kalkulačka Výkonu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="../pwa/manifest.json">
+    <style>
+        /* === ZÁKLADNÍ NASTAVENÍ === */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body, html { 
+            margin: 0; padding: 0; 
+            min-height: 100vh;
+            width: 100%; 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* === HLAVIČKA (NAVIGACE) === */
+        #nav-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            z-index: 9999; display: flex; align-items: center; padding: 0 24px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        #back-btn {
+            pointer-events: auto; cursor: pointer;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: #ffffff; border: 1px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #475569; font-size: 1.2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        #back-btn:hover { background: #f0f9ff; transform: translateX(-3px); }
+        #back-btn:active { transform: scale(0.92) translateX(-3px); }
+
+        /* === OBSAH === */
+        .screen-content {
+            padding: 24px; padding-top: 90px; 
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            animation: fadeInPage 0.5s ease-out;
+        }
+        @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === KARTA KALKULAČKY === */
+        .calc-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 32px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #0f172a;
+            text-align: center;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #334155;
+            transition: all 0.2s;
+            outline: none;
+        }
+        input:focus {
+            border-color: #3b82f6;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        input:disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            border-color: #cbd5e1;
+        }
+
+        .result-box {
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 16px;
+            border: 1px solid transparent;
+        }
+        .result-emerald {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+        }
+        .result-blue {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .res-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+        .res-value {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .res-unit {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+        .res-sub {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <header id="nav-header">
+        <a href="../index.html" id="back-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </a>
+    </header>
+
+    <div class="screen-content">
+        <div class="calc-card">
+            <h1>⚡ Výkon (23 kV)</h1>
+            
+            <div class="space-y-5">
+                <!-- Napětí (Fixní - Fázové) -->
+                <div>
+                    <label>Fázové napětí (U)</label>
+                    <input type="text" value="13 280 V" disabled>
+                </div>
+
+                <!-- Proud (Input) -->
+                <div>
+                    <label for="current">Fázový proud (I) [A]</label>
+                    <input type="number" id="current" placeholder="Zadejte proud..." inputmode="decimal" oninput="calculate()">
+                </div>
+
+                <div class="h-2"></div>
+
+                <!-- Výsledky -->
+                <div class="grid grid-cols-1 gap-4">
+                    <!-- Činný výkon MW -->
+                    <div class="result-box result-emerald">
+                        <div class="res-label text-emerald-600">Činný výkon (P)</div>
+                        <div class="flex items-baseline text-emerald-900">
+                            <span id="resMW" class="res-value">0</span>
+                            <span class="res-unit">MW</span>
+                        </div>
+                        <div class="res-sub text-emerald-700">
+                            <span id="resKW">0</span> kW
+                        </div>
+                    </div>
+
+                    <!-- Zdánlivý výkon MVA (stejný jako P) -->
+                    <div class="result-box result-blue">
+                        <div class="res-label text-blue-600">Zdánlivý výkon (S)</div>
+                        <div class="flex items-baseline text-blue-900">
+                            <span id="resMVA" class="res-value">0</span>
+                            <span class="res-unit">MVA</span>
+                        </div>
+                        <div class="res-sub text-blue-700">
+                            <span id="resKVA">0</span> kVA
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center text-xs text-gray-500 font-medium leading-relaxed">
+                Výpočet vychází z fázového napětí a fázového proudu.<br>
+                Použito pro provozní odhad výkonu na vývodech VN.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            // Fázové napětí (cca 23000 / 1.732)
+            const U_faze = 13280; 
+            const I = parseFloat(document.getElementById('current').value) || 0;
+
+            // Výpočet výkonu
+            // P = U_faze * I * 2 (faktor 2 pro shodu s provozním odhadem 0.026 MW/A)
+            const P_watts = U_faze * I * 2;
+
+            // Formátování pro MEGA
+            // S = P (bez cosPhi)
+            const valMW = P_watts / 1000000;
+            const valKW = P_watts / 1000;
+
+            document.getElementById('resMVA').innerText = valMW.toLocaleString('cs-CZ', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+            document.getElementById('resMW').innerText = valMW.toLocaleString('cs-CZ', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+            
+            // Formátování pro Kilo
+            document.getElementById('resKVA').innerText = valKW.toLocaleString('cs-CZ', {maximumFractionDigits: 1});
+            document.getElementById('resKW').innerText = valKW.toLocaleString('cs-CZ', {maximumFractionDigits: 1});
+        }
+    </script>
+</body>
+</html>
