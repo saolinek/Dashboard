@@ -13,11 +13,12 @@
         
         body, html { 
             margin: 0; padding: 0; 
-            min-height: 100dvh; /* Dynamic viewport height */
+            height: 100dvh; /* Fixní výška viewportu */
             width: 100%; 
             font-family: 'Inter', sans-serif; 
             background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             color: #1e293b;
+            overflow: hidden; /* Zákaz globálního scrollu */
             /* Flex pro centrování obsahu */
             display: flex;
             align-items: center;
@@ -29,23 +30,22 @@
         /* === HLAVNÍ KONTEJNER === */
         #hub-wrapper {
             width: 100%;
-            max-width: 1000px; /* Širší pro desktop grid */
-            padding: 20px;
+            max-width: 1000px;
+            height: 100dvh; /* Roztažení na celou výšku */
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Vertikální flex */
             align-items: center;
-            justify-content: center;
-            /* Zajistí, že se obsah vejde vertikálně, pokud je místo */
-            max-height: 100dvh;
-            overflow-y: auto; /* Scroll jen pokud je nutné */
+            overflow: hidden; /* Zákaz scrollu wrapperu */
+            padding: 0; /* Padding přesunut dovnitř */
         }
 
         /* === HLAVIČKA === */
         .hub-header { 
             text-align: center; 
             margin-bottom: 32px; 
-            margin-top: 10px;
-            flex-shrink: 0; /* Hlavička se nesmršťuje */
+            padding-top: 20px; /* Horní odsazení */
+            flex-shrink: 0; /* Fixní výška, nesmršťuje se */
+            width: 100%;
             animation: fadeInDown 0.6s ease-out;
         }
         .hub-header h1 { 
@@ -76,16 +76,21 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* === GRID KARET (RESPONSIVNÍ) === */
+        /* === GRID KARET (SCROLLOVATELNÝ) === */
         .app-grid {
             display: grid; 
             gap: 16px;
-            width: 100%; 
+            width: 100%;
+            flex: 1; /* Zabere zbylé místo */
+            overflow-y: auto; /* Vertikální scroll */
+            -webkit-overflow-scrolling: touch; /* Plynulý scroll na iOS */
+            padding: 20px; /* Vnitřní odsazení gridu */
+            padding-bottom: 40px; /* Větší spodní mezera */
+            
             /* Mobile First: 1 sloupec */
             grid-template-columns: 1fr;
             /* Tablet a větší: automatické řazení */
             justify-content: center;
-            padding-bottom: 20px;
         }
 
         /* Tablet a Desktop: 2 sloupce pro úsporu výšky */
