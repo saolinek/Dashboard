@@ -3,7 +3,7 @@ Rozcestník pro osobní webové aplikace. Funguje jako **PWA (Progressive Web Ap
 
 ## Struktura projektu
 - `/` - Root, obsahuje pouze `index.html` (rozcestník) a dokumentaci.
-- `/apps/` - Samostatné HTML aplikace (Kalkulačka, Gym, Work...).
+- `/apps/` - Samostatné HTML aplikace (Kalkulačka, Dálnice, Work...).
 - `/pwa/` - Konfigurace PWA (`manifest.json`, `service-worker.js`).
 - `/assets/` - Ikony a statická data.
 

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dálniční Kalkulačka</title>
+    <link rel="manifest" href="../pwa/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* === ZÁKLADNÍ NASTAVENÍ === */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 100%); /* Blue Gradient */
+            color: #1e293b;
+        }
+
+        /* === NAVIGACE (SHODNÁ S DASHBOARDEM) === */
+        #nav-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            z-index: 9999; display: flex; align-items: center; padding: 0 24px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        #back-btn {
+            pointer-events: auto; cursor: pointer;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: #ffffff; 
+            border: 1px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #475569; font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-decoration: none;
+        }
+        #back-btn:hover { background: #faf5ff; transform: translateX(-3px); }
+        #back-btn:active { transform: scale(0.92) translateX(-3px); }
+
+        .screen-content {
+            padding: 24px; padding-top: 90px; height: 100%;
+            overflow-y: auto; /* Allow scrolling content */
+            animation: fadeInPage 0.5s ease-out;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === HLAVNÍ KARTA === */
+        .dalnice-card {
+            background: #ffffff;
+            border: none;
+            border-top: 5px solid #2563eb; /* Blue Top Border */
+            border-radius: 32px; padding: 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            width: 100%; max-width: 520px;
+            margin-bottom: 100px; /* Space for bottom sheet */
+        }
+        
+        h1 { 
+            color: #1e40af; margin-bottom: 24px; margin-top: 0;
+            font-size: 1.75rem; font-weight: 800; text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        /* === INPUTY === */
+        .top-inputs {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px;
+        }
+        .input-box {
+            background: #f8fafc; padding: 12px;
+            border-radius: 16px; border: 1px solid #e2e8f0;
+            transition: border-color 0.2s;
+        }
+        .input-box:focus-within { border-color: #2563eb; }
+        
+        .input-box label {
+            display: block; font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; color: #64748b; margin-bottom: 4px;
+        }
+        .input-box input {
+            width: 100%; border: none; font-size: 1.2rem; font-weight: 700;
+            color: #1e293b; outline: none; background: transparent;
+        }
+
+        /* === VÝSLEDKY GRID === */
+        .results-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+        }
+        .res-card {
+            background: #f8fafc; padding: 16px; border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            display: flex; flex-direction: column; gap: 4px;
+            transition: all 0.2s ease;
+        }
+        .res-card.active { 
+            background: #eff6ff; border-color: #bfdbfe;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+        .res-card.disabled { opacity: 0.5; border-style: dashed; }
+        
+        .res-card .speed { font-size: 0.85rem; font-weight: 700; color: #64748b; }
+        .res-card .price { font-size: 1.35rem; font-weight: 800; color: #1e293b; }
+        .res-card.active .price { color: #2563eb; }
+        .res-card .time { font-size: 0.8rem; font-weight: 600; color: #64748b; display: flex; gap: 4px; }
+
+        /* === NASTAVENÍ TRIGGER === */
+        .settings-btn {
+            width: 100%; padding: 14px; margin-top: 24px;
+            background: #f1f5f9; color: #475569;
+            border: none; border-radius: 16px;
+            font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background 0.2s;
+        }
+        .settings-btn:hover { background: #e2e8f0; }
+
+        /* === BOTTOM SHEET (MODAL) === */
+        .overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 10000;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s;
+            backdrop-filter: blur(4px);
+        }
+        .bottom-sheet {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #ffffff;
+            border-top-left-radius: 32px; border-top-right-radius: 32px;
+            z-index: 10001;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            max-width: 600px; margin: 0 auto;
+            max-height: 85vh; display: flex; flex-direction: column;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
+        .app-open .overlay { opacity: 1; visibility: visible; }
+        .app-open .bottom-sheet { transform: translateY(0); }
+
+        .sheet-header {
+            padding: 24px; border-bottom: 1px solid #f1f5f9;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .sheet-header h2 { font-size: 1.1rem; font-weight: 800; margin: 0; }
+        
+        .sheet-content { padding: 24px; overflow-y: auto; }
+        .cons-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px; background: #f8fafc; border-radius: 12px; margin-bottom: 8px;
+        }
+        .cons-row input {
+            width: 70px; text-align: right; padding: 6px;
+            border: 1px solid #e2e8f0; border-radius: 8px; font-weight: 600;
+        }
+
+        .close-btn {
+            width: 100%; padding: 16px; background: #2563eb; color: white;
+            border: none; border-radius: 16px; font-weight: 700; font-size: 1rem;
+            margin-top: 16px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 520px) {
+            #nav-header { padding: 0 16px; height: 60px; }
+            #back-btn { width: 40px; height: 40px; }
+            .screen-content { padding: 16px; padding-top: 76px; }
+            .dalnice-card { padding: 24px; border-radius: 24px; }
+            .results-grid { grid-template-columns: 1fr; }
+            .res-card { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+    </style>
+</head>
+<body id="body-el">
+
+    <!-- Header Navigation -->
+    <header id="nav-header">
+        <a href="../index.html" id="back-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </a>
+    </header>
+
+    <div class="screen-content">
+        <div class="dalnice-card">
+            <h1>Dálniční Kalkulačka</h1>
+
+            <div class="top-inputs">
+                <div class="input-box">
+                    <label>Vzdálenost (km)</label>
+                    <input type="number" id="dist" placeholder="0" oninput="calculate()">
+                </div>
+                <div class="input-box">
+                    <label>Palivo (Kč/l)</label>
+                    <input type="number" id="price" placeholder="0" oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="results-grid" id="results">
+                <!-- JS Generated -->
+            </div>
+
+            <button class="settings-btn" onclick="toggleSettings(true)">
+                <span>⚙️</span> Upravit spotřebu
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Sheet Settings -->
+    <div class="overlay" onclick="toggleSettings(false)"></div>
+    <div class="bottom-sheet">
+        <div class="sheet-header">
+            <h2>Spotřeba (l/100km)</h2>
+        </div>
+        <div class="sheet-content">
+            <div id="cons-inputs">
+                <!-- JS Generated -->
+            </div>
+            <button class="close-btn" onclick="toggleSettings(false)">Uložit a zavřít</button>
+        </div>
+    </div>
+
+<script>
+    const speeds = [90, 100, 110, 120, 130, 140];
+    // Default consumption data for better UX
+    let consData = {
+        90: 5.5, 100: 6.0, 110: 6.8, 120: 7.5, 130: 8.5, 140: 9.8
+    };
+
+    function init() {
+        const consContainer = document.getElementById('cons-inputs');
+        const resultsContainer = document.getElementById('results');
+
+        // Load saved settings
+        const saved = localStorage.getItem('dalnice_cons');
+        if (saved) { try { consData = JSON.parse(saved); } catch(e){} }
+
+        speeds.forEach(s => {
+            // Settings Inputs
+            const row = document.createElement('div');
+            row.className = 'cons-row';
+            row.innerHTML = `
+                <span style="font-weight:600; color:#334155">${s} km/h</span>
+                <input type="number" step="0.1" value="${consData[s] || ''}" onchange="updateCons(${s}, this.value)">
+            `;
+            consContainer.appendChild(row);
+
+            // Result Cards
+            const card = document.createElement('div');
+            card.className = 'res-card disabled';
+            card.id = `card-${s}`;
+            card.innerHTML = `
+                <span class="speed">${s} km/h</span>
+                <span class="price">-- Kč</span>
+                <span class="time">-- h</span>
+            `;
+            resultsContainer.appendChild(card);
+        });
+
+        // Load previous inputs
+        const prevDist = localStorage.getItem('dalnice_dist');
+        const prevPrice = localStorage.getItem('dalnice_price');
+        if(prevDist) document.getElementById('dist').value = prevDist;
+        if(prevPrice) document.getElementById('price').value = prevPrice;
+
+        if(prevDist && prevPrice) calculate();
+    }
+
+    function toggleSettings(open) {
+        document.body.classList.toggle('app-open', open);
+        if(!open) calculate(); // Recalculate on close just in case
+    }
+
+    function updateCons(speed, value) {
+        const val = parseFloat(value);
+        if (isNaN(val) || val <= 0) delete consData[speed];
+        else consData[speed] = val;
+        
+        localStorage.setItem('dalnice_cons', JSON.stringify(consData));
+    }
+
+    function formatTime(hours) {
+        const h = Math.floor(hours);
+        const m = Math.round((hours - h) * 60);
+        if (h === 0) return `${m} min`;
+        return `${h}h ${m}m`;
+    }
+
+    function calculate() {
+        const dVal = document.getElementById('dist').value;
+        const pVal = document.getElementById('price').value;
+        const distance = parseFloat(dVal);
+        const fuelPrice = parseFloat(pVal);
+
+        // Save inputs
+        localStorage.setItem('dalnice_dist', dVal);
+        localStorage.setItem('dalnice_price', pVal);
+
+        speeds.forEach(s => {
+            const card = document.getElementById(`card-${s}`);
+            const consumption = consData[s];
+
+            if (distance > 0 && fuelPrice > 0 && consumption > 0) {
+                const totalPrice = (consumption / 100) * distance * fuelPrice;
+                const totalTime = distance / s;
+
+                card.classList.remove('disabled');
+                card.classList.add('active');
+                card.innerHTML = `
+                    <span class="speed">${s} km/h</span>
+                    <span class="price">${Math.round(totalPrice)} Kč</span>
+                    <div class="time">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        ${formatTime(totalTime)}
+                    </div>
+                `;
+            } else {
+                card.classList.add('disabled');
+                card.classList.remove('active');
+                card.innerHTML = `
+                    <span class="speed">${s} km/h</span>
+                    <span class="price">-- Kč</span>
+                    <span class="time">-- h</span>
+                `;
+            }
+        });
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

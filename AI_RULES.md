@@ -5,12 +5,12 @@
 - **Uživatel:** Není programátor. Nechce číst kód, chce funkční výsledek.
 - **Technologie:** Čisté HTML / CSS / JS. Žádný backend. Žádný Node.js, npm, bundlery (Webpack/Vite) ani build procesy.
 - **Hosting:** Web běží přímo z GitHub Pages.
-- **Struktura:** `index.html` je rozcestník (Dashboard). Ostatní aplikace (např. `gym.html`) jsou samostatné soubory ("Single File Components" princip, ale v čistém HTML).
+- **Struktura:** `index.html` je rozcestník (Dashboard). Ostatní aplikace (např. `work.html`) jsou samostatné soubory ("Single File Components" princip, ale v čistém HTML).
 - **Cíl:** Jednoduchost, stabilita, vizuální čistota.
 
 ## 2. ZÁVAZNÁ PRAVIDLA KÓDU
 1.  **Žádné externí závislosti:** Nepoužívej `import`, `require`, ani npm balíčky. Pokud je nutná knihovna, použij CDN (např. pro TailwindCSS), ale pouze pokud je to nezbytné.
-2.  **Samostatnost souborů:** Změna v `gym.html` nesmí rozbít `index.html`. CSS piš inline (`<style>`) nebo do hlavičky daného souboru, nevytvářej globální CSS soubory, pokud o to nejsi výslovně požádán.
+2.  **Samostatnost souborů:** Změna v `work.html` nesmí rozbít `index.html`. CSS piš inline (`<style>`) nebo do hlavičky daného souboru, nevytvářej globální CSS soubory, pokud o to nejsi výslovně požádán.
 3.  **Mobile-First:** Vše musí fungovat perfektně na mobilu. Desktop je až druhotný (responzivita pomocí `@media (min-width: ...)`).
 4.  **Design System:**
     - Dodržuj existující vizuální styl (fonty 'Inter'/'Cinzel', gradienty, glassmorphism, zaoblené rohy).

@@ -2,7 +2,7 @@ const CACHE_NAME = 'dashboard-pwa-v1';
 const ASSETS = [
   '/',
   '/index.html',
-  '/apps/gym.html',
+  '/apps/dalnice.html',
   '/apps/lol.html',
   '/apps/prepocet_i.html',
   '/apps/Odstavky.html',
