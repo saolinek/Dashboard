@@ -5,130 +5,175 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dálniční Kalkulačka</title>
     <link rel="manifest" href="../pwa/manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* === ZÁKLADNÍ NASTAVENÍ === */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { 
             margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 100%);
+            background: linear-gradient(135deg, #93c5fd 0%, #2563eb 100%); /* Blue Theme */
             color: #1e293b;
         }
 
+        /* === HEADER (GLASSMORPHISM) === */
         #nav-header {
-            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
-            z-index: 10; display: flex; align-items: center; padding: 0 20px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            z-index: 10; display: flex; align-items: center; padding: 0 24px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
         }
         #back-btn {
-            cursor: pointer; width: 40px; height: 40px; border-radius: 50%;
+            cursor: pointer; width: 44px; height: 44px; border-radius: 50%;
             background: #ffffff; border: 1px solid #e2e8f0;
             display: flex; align-items: center; justify-content: center;
-            color: #475569; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            text-decoration: none;
+            color: #475569; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        #back-btn:hover { background: #eff6ff; transform: translateX(-2px); }
+        #back-btn:active { transform: scale(0.95); }
 
-        /* Fixed Layout Container - No Scroll */
+        /* === HLAVNÍ OBSAH === */
         .screen-content {
-            position: absolute; top: 60px; bottom: 0; left: 0; right: 0;
-            padding: 10px 20px 20px;
+            position: absolute; top: 70px; bottom: 0; left: 0; right: 0;
+            padding: 20px 24px 30px;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
             overflow: hidden; /* STRICT NO SCROLL */
+            animation: fadeInPage 0.5s ease-out;
         }
+
+        @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .dalnice-card {
             background: #ffffff;
             border-top: 5px solid #2563eb;
-            border-radius: 24px; padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 100%; max-width: 480px; height: 100%;
+            border-radius: 32px; padding: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            width: 100%; max-width: 520px; height: 100%;
             display: flex; flex-direction: column;
         }
 
         h1 { 
-            color: #1e40af; margin: 0 0 16px 0;
-            font-size: 1.4rem; font-weight: 800; text-align: center;
-            flex-shrink: 0;
+            color: #1e3a8a; margin: 0 0 20px 0;
+            font-size: 1.75rem; font-weight: 800; text-align: center;
+            flex-shrink: 0; letter-spacing: -0.5px;
         }
 
         .top-inputs {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;
             flex-shrink: 0;
         }
         .input-box {
-            background: #f8fafc; padding: 8px 12px;
-            border-radius: 12px; border: 1px solid #e2e8f0;
+            background: #f1f5f9; padding: 10px 14px;
+            border-radius: 16px; border: 2px solid transparent;
+            transition: 0.2s;
         }
+        .input-box:focus-within { border-color: #bfdbfe; background: #fff; }
+
         .input-box label {
-            display: block; font-size: 0.65rem; font-weight: 700;
-            text-transform: uppercase; color: #64748b; margin-bottom: 2px;
+            display: block; font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; color: #64748b; margin-bottom: 4px;
         }
         .input-box input {
-            width: 100%; border: none; font-size: 1.1rem; font-weight: 700;
+            width: 100%; border: none; font-size: 1.2rem; font-weight: 700;
             color: #1e293b; background: transparent; outline: none; padding: 0;
+            font-family: 'Inter', sans-serif;
         }
 
+        /* === GRID VÝSLEDKŮ === */
         .results-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-            flex: 1; min-height: 0; /* Important for grid within flex */
-            align-content: start;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+            flex: 1; min-height: 0; /* Umožní scroll uvnitř gridu pokud by bylo třeba, ale zde fixní */
+            align-content: start; overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 10px;
         }
+        /* Scrollbar styling pro grid */
+        .results-grid::-webkit-scrollbar { width: 4px; }
+        .results-grid::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         
         .res-card {
-            background: #f8fafc; padding: 10px; border-radius: 16px;
+            background: #f8fafc; padding: 12px; border-radius: 18px;
             border: 1px solid #e2e8f0;
             display: flex; flex-direction: column; justify-content: space-between;
-            min-height: 70px; /* Compact height */
+            min-height: 75px; transition: 0.2s;
         }
         .res-card.active { 
-            background: #eff6ff; border-color: #bfdbfe;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+            background: #eff6ff; border-color: #60a5fa;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+            transform: translateY(-1px);
         }
-        .res-card.disabled { opacity: 0.5; border-style: dashed; }
+        .res-card.disabled { opacity: 0.6; background: #f1f5f9; border-style: dashed; }
         
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .speed { font-size: 0.9rem; font-weight: 700; color: #334155; }
+        .speed { font-size: 0.85rem; font-weight: 700; color: #475569; background: #e2e8f0; padding: 2px 8px; border-radius: 6px; }
+        .active .speed { background: #dbeafe; color: #2563eb; }
         
-        .price { font-size: 1.3rem; font-weight: 800; color: #1e293b; line-height: 1.1; margin-top: 4px; }
-        .active .price { color: #2563eb; }
+        .price { font-size: 1.4rem; font-weight: 800; color: #1e293b; line-height: 1.1; margin-top: 6px; }
+        .active .price { color: #1d4ed8; }
         
-        .time { font-size: 0.75rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+        .time { font-size: 0.8rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 4px; margin-top: 4px; }
 
         .settings-btn {
-            margin-top: 12px; padding: 12px; width: 100%;
-            background: #f1f5f9; color: #475569; border: none; border-radius: 12px;
-            font-weight: 700; font-size: 0.85rem; cursor: pointer; flex-shrink: 0;
+            margin-top: 16px; padding: 14px; width: 100%;
+            background: #f8fafc; color: #475569; border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            font-weight: 700; font-size: 0.9rem; cursor: pointer; flex-shrink: 0;
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .settings-btn:active { background: #e2e8f0; transform: scale(0.98); }
 
-        /* Bottom Sheet */
+        /* === BOTTOM SHEET (MODAL) === */
         .overlay {
             position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-            background: rgba(0,0,0,0.5); z-index: 20; opacity: 0; visibility: hidden; transition: 0.3s;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+            z-index: 20; opacity: 0; visibility: hidden; transition: 0.3s;
         }
         .bottom-sheet {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: #fff; border-top-left-radius: 24px; border-top-right-radius: 24px;
+            background: #fff; border-top-left-radius: 32px; border-top-right-radius: 32px;
             z-index: 21; transform: translateY(100%); transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            padding: 20px; max-height: 80vh; overflow-y: auto;
+            padding: 24px; max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
         }
         .app-open .overlay { opacity: 1; visibility: visible; }
         .app-open .bottom-sheet { transform: translateY(0); }
         
-        .cons-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #f1f5f9; }
-        .cons-row input { width: 60px; text-align: right; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px; font-weight: 600; }
-        .close-btn { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 12px; font-weight: 700; margin-top: 16px; }
+        .bs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .bs-header h2 { margin: 0; font-size: 1.2rem; font-weight: 800; color: #1e293b; }
+        
+        .cons-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .cons-row span { font-weight: 600; color: #334155; }
+        .cons-row input { 
+            width: 70px; text-align: center; border: 1px solid #e2e8f0; 
+            border-radius: 8px; padding: 8px; font-weight: 700; color: #2563eb; background: #f8fafc;
+            outline: none;
+        }
+        .cons-row input:focus { border-color: #2563eb; background: #fff; }
 
+        .close-btn { 
+            width: 100%; padding: 16px; background: #2563eb; color: white; 
+            border: none; border-radius: 16px; font-weight: 700; margin-top: 24px; font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        .close-btn:active { transform: scale(0.98); }
+
+        /* Media Query pro malé displeje */
         @media (max-height: 700px) {
-            h1 { font-size: 1.2rem; margin-bottom: 10px; }
-            .top-inputs { margin-bottom: 10px; }
-            .res-card { padding: 8px; min-height: 60px; }
-            .price { font-size: 1.1rem; }
+            h1 { font-size: 1.4rem; margin-bottom: 12px; }
+            .top-inputs { margin-bottom: 12px; }
+            .res-card { padding: 10px; min-height: 65px; }
+            .price { font-size: 1.2rem; }
+            .screen-content { padding-top: 75px; }
         }
     </style>
 </head>
 <body>
     <header id="nav-header">
         <a href="../index.html" id="back-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
         </a>
     </header>
 
@@ -152,7 +197,8 @@
             </div>
 
             <button class="settings-btn" onclick="toggleSettings(true)">
-                ⚙️ Upravit spotřebu
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.39a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Upravit spotřebu
             </button>
         </div>
     </div>
@@ -160,9 +206,12 @@
     <!-- Settings -->
     <div class="overlay" onclick="toggleSettings(false)"></div>
     <div class="bottom-sheet">
-        <h2 style="font-size:1rem; margin-bottom:16px;">Spotřeba (l/100km)</h2>
+        <div class="bs-header">
+            <h2>Spotřeba (l/100km)</h2>
+            <div style="cursor:pointer; padding:8px;" onclick="toggleSettings(false)">✕</div>
+        </div>
         <div id="cons-inputs"></div>
-        <button class="close-btn" onclick="toggleSettings(false)">Hotovo</button>
+        <button class="close-btn" onclick="toggleSettings(false)">Uložit a zavřít</button>
     </div>
 
 <script>
@@ -190,7 +239,7 @@
             // Settings
             sCont.innerHTML += `
                 <div class="cons-row">
-                    <span style="font-weight:600">${s} km/h</span>
+                    <span>${s} km/h</span>
                     <input type="number" step="0.1" value="${consData[s]||''}" onchange="updateCons(${s}, this.value)">
                 </div>`;
 
@@ -242,7 +291,7 @@
                 card.className = 'res-card active';
                 card.querySelector('.price').innerText = `${totalP} Kč`;
                 card.querySelector('.time').innerHTML = `
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-top:-1px"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                     ${timeStr}`;
             } else {
                 card.className = 'res-card disabled';
