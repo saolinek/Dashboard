@@ -275,9 +275,7 @@
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('pwa/service-worker.js', { scope: '/' })
-                    .then(reg => console.log('SW registrován:', reg))
-                    .catch(err => console.log('SW chyba:', err));
+                navigator.serviceWorker.register('pwa/service-worker.js', { scope: '/' });
             });
         }
 

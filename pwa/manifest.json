@@ -2,15 +2,17 @@
   "name": "Dashboard",
   "short_name": "Dashboard",
   "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#e0c3fc",
   "theme_color": "#8ec5fc",
-  "scope": "/",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/assets/icons/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }
