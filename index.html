@@ -35,10 +35,7 @@
             transition: background var(--transition-normal);
         }
 
-        [data-theme="dark"] body,
-        [data-theme="dark"] html {
-            background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
-        }
+
 
         .animated-bg {
             display: none;
@@ -381,10 +378,6 @@
         <div class="hub-header">
             <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 8px;">
                 <h1 style="margin: 0;">Dashboard</h1>
-                <button id="themeToggle" class="theme-toggle" aria-label="Přepnout téma"
-                    title="Přepnout světlý/tmavý režim">
-                    <span id="themeIcon">🌙</span>
-                </button>
             </div>
             <p>Centrála aplikací</p>
             <p id="svatek" class="name-day-text"></p>
@@ -479,25 +472,7 @@
             });
         }
 
-        // === DARK MODE ===
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
 
-        function setTheme(isDark) {
-            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-            themeIcon.textContent = isDark ? '☀️' : '🌙';
-            localStorage.setItem('dashboard_theme', isDark ? 'dark' : 'light');
-        }
-
-        // Load saved theme
-        const savedTheme = localStorage.getItem('dashboard_theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setTheme(savedTheme ? savedTheme === 'dark' : prefersDark);
-
-        themeToggle.addEventListener('click', () => {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            setTheme(!isDark);
-        });
 
         // === LIVE STATS: Today's Date ===
         const today = new Date();
