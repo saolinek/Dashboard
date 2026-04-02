@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Záložky</title>
+    <link rel="manifest" href="../pwa/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body {
+            height: 100%; overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #f0eeff 0%, #e8e5ff 100%);
+            color: #2d3047;
+        }
+
+        /* Nav header */
+        #nav-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            z-index: 9999; display: flex; align-items: center; padding: 0 24px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        #back-btn {
+            pointer-events: auto; cursor: pointer;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #475569; font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-decoration: none;
+        }
+        #back-btn:hover { background: #f5f3ff; transform: translateX(-3px); }
+        #back-btn:active { transform: scale(0.92) translateX(-3px); }
+
+        /* Main layout */
+        .screen-content {
+            padding: 0; padding-top: 70px; height: 100dvh;
+            display: flex; flex-direction: column;
+            animation: fadeInPage 0.5s ease-out;
+        }
+        @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .inner {
+            max-width: 600px; margin: 0 auto; padding: 20px 16px 16px;
+            width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column;
+        }
+
+        /* Form */
+        form {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 12px rgba(108,92,231,0.08);
+            flex-shrink: 0;
+        }
+        .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .form-row:last-child { margin-bottom: 0; }
+        input {
+            flex: 1;
+            padding: 11px 14px;
+            border: 1.5px solid #e8e9f3;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: #fafaff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: #2d3047;
+        }
+        input::placeholder { color: #b8bbd8; }
+        input:focus { outline: none; border-color: #a29bfe; box-shadow: 0 0 0 3px rgba(162,155,254,0.15); background: #fff; }
+        .btn {
+            padding: 11px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6c5ce7, #7c6cf0);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(108,92,231,0.3);
+        }
+        .btn-primary:hover { box-shadow: 0 4px 16px rgba(108,92,231,0.4); transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
+
+        /* Actions */
+        .actions { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; flex-shrink: 0; }
+        .btn-action {
+            padding: 8px 14px;
+            border: 1.5px solid #e8e9f3;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: 500;
+            background: #fff;
+            color: #6e7191;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-action:hover { border-color: #a29bfe; color: #6c5ce7; background: #f8f7ff; }
+        .btn-action svg { width: 14px; height: 14px; }
+
+        /* List */
+        .list { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; overflow-y: auto; padding-right: 4px; }
+        .list::-webkit-scrollbar { width: 4px; }
+        .list::-webkit-scrollbar-track { background: transparent; }
+        .list::-webkit-scrollbar-thumb { background: #d8d6f0; border-radius: 4px; }
+        .list::-webkit-scrollbar-thumb:hover { background: #a29bfe; }
+
+        .item {
+            display: flex; align-items: center; gap: 14px;
+            background: #fff; padding: 10px 14px;
+            border-radius: 14px; border: 1.5px solid transparent;
+            box-shadow: 0 1px 4px rgba(108,92,231,0.06);
+            transition: all 0.2s; cursor: pointer;
+        }
+        .item:hover { border-color: #a29bfe; box-shadow: 0 4px 16px rgba(108,92,231,0.1); }
+        .item-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: linear-gradient(135deg, #f0eeff, #e8e5ff);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .item-icon img { width: 18px; height: 18px; border-radius: 3px; }
+        .item-icon-fallback { width: 18px; height: 18px; background: linear-gradient(135deg, #6c5ce7, #a29bfe); border-radius: 5px; }
+        .item-info { min-width: 0; flex: 1; }
+        .item-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .item-url { font-size: 0.75rem; color: #a0a3bd; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none; }
+        .btn-delete {
+            background: none; border: none; cursor: pointer; color: #d0d1e0;
+            padding: 6px; border-radius: 8px; flex-shrink: 0;
+            transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-delete:hover { color: #e55; background: #fff0f0; }
+        .btn-delete svg { width: 16px; height: 16px; }
+
+        .empty { text-align: center; color: #b8bbd8; padding: 32px 0; font-size: 0.9rem; }
+        .empty-icon { font-size: 2rem; margin-bottom: 8px; opacity: 0.4; }
+
+        #importFile { display: none; }
+
+        @media (max-width: 480px) {
+            .inner { padding: 14px 12px 12px; }
+            .form-row { flex-direction: column; }
+            .item { padding: 10px 12px; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="nav-header">
+        <a href="../index.html" id="back-btn">&#8592;</a>
+    </nav>
+
+    <div class="screen-content">
+        <div class="inner">
+            <form id="form">
+                <div class="form-row">
+                    <input type="url" id="urlInput" placeholder="https://example.com" required>
+                </div>
+                <div class="form-row">
+                    <input type="text" id="nameInput" placeholder="Název odkazu" required>
+                    <button type="submit" class="btn btn-primary">Přidat</button>
+                </div>
+            </form>
+
+            <div class="actions">
+                <button class="btn-action" onclick="openAll()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    Otevřít vše
+                </button>
+                <button class="btn-action" onclick="exportBookmarks()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export
+                </button>
+                <button class="btn-action" onclick="document.getElementById('importFile').click()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Import
+                </button>
+                <input type="file" id="importFile" accept=".json" onchange="importBookmarks(event)">
+            </div>
+
+            <div id="list" class="list"></div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'bookmarks';
+
+        function getBookmarks() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        }
+
+        function saveBookmarks(bookmarks) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
+            render();
+        }
+
+        function getFaviconUrl(url) {
+            try {
+                const u = new URL(url);
+                return `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=32`;
+            } catch { return ''; }
+        }
+
+        function esc(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        function render() {
+            const list = document.getElementById('list');
+            const bookmarks = getBookmarks();
+            if (!bookmarks.length) {
+                list.innerHTML = '<div class="empty"><div class="empty-icon">&#x1F516;</div>Zatím žádné záložky</div>';
+                return;
+            }
+            list.innerHTML = bookmarks.map((b, i) => `
+                <div class="item" onclick="openBookmark('${esc(b.url)}')">
+                    <div class="item-icon">
+                        <img src="${esc(getFaviconUrl(b.url))}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'item-icon-fallback'}))" alt="">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">${esc(b.name)}</div>
+                        <div class="item-url">${esc(b.url)}</div>
+                    </div>
+                    <button class="btn-delete" onclick="event.stopPropagation(); remove(${i})" title="Smazat">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('form').addEventListener('submit', e => {
+            e.preventDefault();
+            const url = document.getElementById('urlInput').value.trim();
+            const name = document.getElementById('nameInput').value.trim();
+            if (!url || !name) return;
+            const bookmarks = getBookmarks();
+            bookmarks.unshift({ url, name, created: Date.now() });
+            saveBookmarks(bookmarks);
+            e.target.reset();
+            document.getElementById('urlInput').focus();
+        });
+
+        function openBookmark(url) {
+            window.open(url, '_blank');
+        }
+
+        function openAll() {
+            getBookmarks().forEach(b => window.open(b.url, '_blank'));
+        }
+
+        function remove(index) {
+            const bookmarks = getBookmarks();
+            bookmarks.splice(index, 1);
+            saveBookmarks(bookmarks);
+        }
+
+        function exportBookmarks() {
+            const data = JSON.stringify(getBookmarks(), null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'bookmarks.json';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        function importBookmarks(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (!Array.isArray(imported)) throw new Error();
+                    const bookmarks = getBookmarks();
+                    imported.forEach(b => { if (b.url && b.name) bookmarks.unshift(b); });
+                    saveBookmarks(bookmarks);
+                } catch {
+                    alert('Neplatný JSON soubor.');
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        render();
+    </script>
+</body>
+</html>
