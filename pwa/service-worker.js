@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dashboard-pwa-v4';
+const CACHE_NAME = 'dashboard-pwa-v5';
 const ASSETS = [
   '/',
   '/index.html',
@@ -10,6 +10,7 @@ const ASSETS = [
   '/apps/Parametry_site.html',
   '/apps/prepocet_i.html',
   '/apps/work.html',
+  '/apps/Bookmarks.html',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;800&display=swap'
 ];
