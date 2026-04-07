@@ -126,8 +126,9 @@
             transition: all 0.2s; cursor: grab;
         }
         .item:hover { border-color: #a29bfe; box-shadow: 0 4px 16px rgba(108,92,231,0.1); }
-        .item.drag-over { border-color: #6c5ce7; background: #f5f3ff; }
         .item.dragging { opacity: 0.4; }
+        .item.drop-before { box-shadow: 0 -3px 0 0 #6c5ce7, 0 1px 4px rgba(108,92,231,0.06); }
+        .item.drop-after  { box-shadow: 0  3px 0 0 #6c5ce7, 0 1px 4px rgba(108,92,231,0.06); }
         .item-icon {
             width: 36px; height: 36px; border-radius: 10px;
             background: linear-gradient(135deg, #f0eeff, #e8e5ff);
@@ -232,8 +233,7 @@
             list.innerHTML = bookmarks.map((b, i) => `
                 <div class="item" draggable="true"
                      ondragstart="dragStart(event,${i})"
-                     ondragenter="dragEnter(event)"
-                     ondragover="dragOver(event)"
+                     ondragover="dragOver(event,${i})"
                      ondragleave="dragLeave(event)"
                      ondrop="drop(event,${i})"
                      ondragend="dragEnd(event)"
@@ -308,6 +308,7 @@
         }
 
         let dragSrcIndex = null;
+        let dropPosition = null; // 'before' | 'after'
 
         function dragStart(e, index) {
             dragSrcIndex = index;
@@ -315,31 +316,44 @@
             e.dataTransfer.effectAllowed = 'move';
         }
 
-        function dragEnter(e) {
-            e.currentTarget.classList.add('drag-over');
-        }
-
-        function dragOver(e) {
+        function dragOver(e, targetIndex) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
+            const rect = e.currentTarget.getBoundingClientRect();
+            const pos = e.clientY < rect.top + rect.height / 2 ? 'before' : 'after';
+            if (pos !== dropPosition) {
+                e.currentTarget.classList.remove('drop-before', 'drop-after');
+                e.currentTarget.classList.add('drop-' + pos);
+                dropPosition = pos;
+            }
         }
 
         function dragLeave(e) {
-            e.currentTarget.classList.remove('drag-over');
+            if (!e.currentTarget.contains(e.relatedTarget)) {
+                e.currentTarget.classList.remove('drop-before', 'drop-after');
+                dropPosition = null;
+            }
         }
 
         function drop(e, targetIndex) {
             e.stopPropagation();
-            e.currentTarget.classList.remove('drag-over');
-            if (dragSrcIndex === null || dragSrcIndex === targetIndex) return;
+            const pos = dropPosition;
+            e.currentTarget.classList.remove('drop-before', 'drop-after');
+            dropPosition = null;
+            if (dragSrcIndex === null) return;
             const bookmarks = getBookmarks();
             const [moved] = bookmarks.splice(dragSrcIndex, 1);
-            bookmarks.splice(targetIndex, 0, moved);
+            let insertIndex = pos === 'after' ? targetIndex + 1 : targetIndex;
+            if (dragSrcIndex < insertIndex) insertIndex--;
+            bookmarks.splice(insertIndex, 0, moved);
             saveBookmarks(bookmarks);
+            dragSrcIndex = null;
         }
 
         function dragEnd(e) {
             e.currentTarget.classList.remove('dragging');
+            document.querySelectorAll('.item').forEach(el => el.classList.remove('drop-before', 'drop-after'));
+            dropPosition = null;
         }
 
         render();
