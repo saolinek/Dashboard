@@ -123,9 +123,11 @@
             background: #fff; padding: 10px 14px;
             border-radius: 14px; border: 1.5px solid transparent;
             box-shadow: 0 1px 4px rgba(108,92,231,0.06);
-            transition: all 0.2s; cursor: pointer;
+            transition: all 0.2s; cursor: grab;
         }
         .item:hover { border-color: #a29bfe; box-shadow: 0 4px 16px rgba(108,92,231,0.1); }
+        .item.drag-over { border-color: #6c5ce7; background: #f5f3ff; }
+        .item.dragging { opacity: 0.4; }
         .item-icon {
             width: 36px; height: 36px; border-radius: 10px;
             background: linear-gradient(135deg, #f0eeff, #e8e5ff);
@@ -228,7 +230,14 @@
                 return;
             }
             list.innerHTML = bookmarks.map((b, i) => `
-                <div class="item" onclick="openBookmark('${esc(b.url)}')">
+                <div class="item" draggable="true"
+                     ondragstart="dragStart(event,${i})"
+                     ondragenter="dragEnter(event)"
+                     ondragover="dragOver(event)"
+                     ondragleave="dragLeave(event)"
+                     ondrop="drop(event,${i})"
+                     ondragend="dragEnd(event)"
+                     onclick="openBookmark('${esc(b.url)}')">
                     <div class="item-icon">
                         <img src="${esc(getFaviconUrl(b.url))}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'item-icon-fallback'}))" alt="">
                     </div>
@@ -296,6 +305,41 @@
                 event.target.value = '';
             };
             reader.readAsText(file);
+        }
+
+        let dragSrcIndex = null;
+
+        function dragStart(e, index) {
+            dragSrcIndex = index;
+            e.currentTarget.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function dragEnter(e) {
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function dragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function drop(e, targetIndex) {
+            e.stopPropagation();
+            e.currentTarget.classList.remove('drag-over');
+            if (dragSrcIndex === null || dragSrcIndex === targetIndex) return;
+            const bookmarks = getBookmarks();
+            const [moved] = bookmarks.splice(dragSrcIndex, 1);
+            bookmarks.splice(targetIndex, 0, moved);
+            saveBookmarks(bookmarks);
+        }
+
+        function dragEnd(e) {
+            e.currentTarget.classList.remove('dragging');
         }
 
         render();
