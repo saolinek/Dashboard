@@ -788,8 +788,9 @@
             cursor: grab;
         }
 
-        .app-grid.drag-over {
-            background: rgba(59, 130, 246, 0.05);
+        .folder-content-area.drag-over {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px dashed var(--color-accent-blue);
             border-radius: 12px;
         }
 
@@ -1260,6 +1261,12 @@
             // Content area
             const contentArea = document.createElement('div');
             contentArea.className = 'folder-content-area';
+            contentArea.setAttribute('data-folder-id', folder.id);
+
+            // Setup drag over for moving cards
+            contentArea.addEventListener('dragover', handleContentAreaDragOver);
+            contentArea.addEventListener('drop', handleContentAreaDrop);
+            contentArea.addEventListener('dragleave', handleContentAreaDragLeave);
 
             folder.cards.forEach((cardId, index) => {
                 const card = cloneCard(cardId);
@@ -1367,10 +1374,80 @@
             dragSourceFolder = this.getAttribute('data-source-folder');
             this.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', draggedCard);
         }
 
         function handleCardDragEnd(e) {
             this.classList.remove('dragging');
+            draggedCard = null;
+            dragSourceFolder = null;
+
+            // Remove drag-over class from all content areas
+            document.querySelectorAll('.folder-content-area').forEach(area => {
+                area.classList.remove('drag-over');
+            });
+        }
+
+        // Content area drag handlers
+        function handleContentAreaDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            this.classList.add('drag-over');
+        }
+
+        function handleContentAreaDragLeave(e) {
+            if (e.target === this) {
+                this.classList.remove('drag-over');
+            }
+        }
+
+        function handleContentAreaDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            this.classList.remove('drag-over');
+
+            if (!draggedCard || !dragSourceFolder) return;
+
+            const targetFolderId = this.getAttribute('data-folder-id');
+
+            // Don't move to same folder
+            if (dragSourceFolder === targetFolderId) return;
+
+            // Move card from source folder to target folder
+            let sourceCards;
+            if (dragSourceFolder === 'unorganized') {
+                sourceCards = dashboardState.unorganizedCards;
+            } else {
+                const sourceFolder = dashboardState.folders.find(f => f.id === dragSourceFolder);
+                sourceCards = sourceFolder ? sourceFolder.cards : null;
+            }
+
+            if (!sourceCards) return;
+
+            // Remove from source
+            const cardIndex = sourceCards.indexOf(draggedCard);
+            if (cardIndex > -1) {
+                sourceCards.splice(cardIndex, 1);
+            }
+
+            // Add to target
+            let targetCards;
+            if (targetFolderId === 'unorganized') {
+                targetCards = dashboardState.unorganizedCards;
+            } else {
+                const targetFolder = dashboardState.folders.find(f => f.id === targetFolderId);
+                targetCards = targetFolder ? targetFolder.cards : null;
+            }
+
+            if (targetCards && !targetCards.includes(draggedCard)) {
+                targetCards.push(draggedCard);
+            }
+
+            draggedCard = null;
+            dragSourceFolder = null;
+            saveState();
+            renderGrid();
         }
 
         // Initialize dashboard
