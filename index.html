@@ -199,6 +199,10 @@
             animation-delay: 0.21s;
         }
 
+        .app-card:nth-child(8) {
+            animation-delay: 0.24s;
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -281,6 +285,10 @@
             background: linear-gradient(to bottom, #6c5ce7, #a29bfe);
         }
 
+        .card-timer::before {
+            background: linear-gradient(to bottom, #0f9b8e, #38ef7d);
+        }
+
         .card-icon {
             width: 42px;
             height: 42px;
@@ -336,6 +344,11 @@
         .card-bookmarks .card-icon {
             background: #f0eeff;
             color: #6c5ce7;
+        }
+
+        .card-timer .card-icon {
+            background: #e6faf5;
+            color: #0f9b8e;
         }
 
         .app-card:hover .card-icon {
@@ -516,6 +529,15 @@
                 <div class="card-content">
                     <h2>Záložky</h2>
                     <p>Správa odkazů</p>
+                </div>
+                <div class="card-arrow">›</div>
+            </a>
+
+            <a href="apps/odstavka-timer.html" class="app-card card-timer">
+                <div class="card-icon">⏱️</div>
+                <div class="card-content">
+                    <h2>Odstavka</h2>
+                    <p>Čas začátku a konce</p>
                 </div>
                 <div class="card-arrow">›</div>
             </a>
