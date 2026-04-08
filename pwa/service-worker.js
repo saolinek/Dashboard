@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dashboard-pwa-v5';
+const CACHE_NAME = 'dashboard-pwa-v6';
 const ASSETS = [
   '/',
   '/index.html',
@@ -7,7 +7,6 @@ const ASSETS = [
   '/apps/dalnice.html',
   '/apps/lol.html',
   '/apps/Odstavky.html',
-  '/apps/Parametry_site.html',
   '/apps/prepocet_i.html',
   '/apps/work.html',
   '/apps/Bookmarks.html',
