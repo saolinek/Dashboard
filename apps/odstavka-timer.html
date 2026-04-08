@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Odstavka – Čas konce</title>
+    <link rel="manifest" href="../pwa/manifest.json">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100dvh;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f9b8e 0%, #38ef7d 100%);
+            color: #1e293b;
+            overflow: hidden;
+        }
+
+        /* === NAV HEADER === */
+        #nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        #back-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            flex-shrink: 0;
+        }
+
+        #back-btn:hover { transform: scale(1.08); box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
+        #back-btn:active { transform: scale(0.96); }
+
+        #nav-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-left: 16px;
+            letter-spacing: -0.3px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        }
+
+        /* === MAIN CONTENT === */
+        .screen-content {
+            padding-top: 90px;
+            padding-bottom: 32px;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        /* === CARD === */
+        .card {
+            background: #ffffff;
+            border-radius: 32px;
+            border-top: 5px solid #0f9b8e;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 440px;
+            padding: 32px 28px 28px;
+            animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* === PICKER WRAPPER === */
+        .picker-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            position: relative;
+            margin-bottom: 28px;
+        }
+
+        .picker-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .picker-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* The drum container */
+        .drum {
+            position: relative;
+            width: 100px;
+            height: 168px;
+            overflow: hidden;
+        }
+
+        .drum-scroll {
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .drum-scroll::-webkit-scrollbar { display: none; }
+
+        /* Padding items at top/bottom so first/last can center */
+        .drum-pad {
+            height: 56px;
+            display: block;
+        }
+
+        .drum-item {
+            height: 56px;
+            line-height: 56px;
+            text-align: center;
+            scroll-snap-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Gradient fade mask */
+        .drum::before, .drum::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 56px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .drum::before {
+            top: 0;
+            background: linear-gradient(to bottom, #ffffff 20%, rgba(255,255,255,0));
+        }
+        .drum::after {
+            bottom: 0;
+            background: linear-gradient(to top, #ffffff 20%, rgba(255,255,255,0));
+        }
+
+        /* Center highlight bar */
+        .drum-highlight {
+            position: absolute;
+            top: 56px;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: rgba(15, 155, 142, 0.07);
+            border-top: 1.5px solid rgba(15, 155, 142, 0.25);
+            border-bottom: 1.5px solid rgba(15, 155, 142, 0.25);
+            border-radius: 10px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Separator between hours and minutes */
+        .picker-sep {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            padding: 0 4px;
+            padding-top: 22px; /* align with drum center */
+            line-height: 56px;
+            align-self: flex-start;
+            margin-top: 22px;
+        }
+
+        /* === RESULTS === */
+        .results {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .result-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 14px 18px;
+            gap: 12px;
+        }
+
+        .result-row.winter { border-left: 4px solid #60a5fa; }
+        .result-row.summer { border-left: 4px solid #f59e0b; }
+
+        .result-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .result-season {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .result-months {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .result-time {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: #0f9b8e;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 520px) {
+            .card {
+                border-radius: 24px;
+                padding: 24px 18px 20px;
+            }
+            .drum { width: 84px; }
+            .drum-item { font-size: 1.75rem; }
+            .result-time { font-size: 1.65rem; }
+            .picker-sep { font-size: 1.75rem; }
+        }
+
+        @media (max-height: 700px) {
+            .screen-content { justify-content: flex-start; }
+            .card { padding: 20px 18px 16px; }
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="nav-header">
+        <a href="../index.html" id="back-btn" aria-label="Zpět">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="#0f9b8e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </a>
+        <span id="nav-title">Čas odstavky</span>
+    </nav>
+
+    <div class="screen-content">
+        <div class="card">
+            <div class="card-title">Začátek odstavky</div>
+
+            <!-- Picker -->
+            <div class="picker-wrapper">
+                <!-- Hours -->
+                <div class="picker-col">
+                    <div class="picker-label">Hodiny</div>
+                    <div class="drum" id="drum-hours">
+                        <div class="drum-highlight"></div>
+                        <div class="drum-scroll" id="scroll-hours">
+                            <div class="drum-pad"></div>
+                            <!-- filled by JS -->
+                            <div class="drum-pad"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="picker-sep">:</div>
+
+                <!-- Minutes -->
+                <div class="picker-col">
+                    <div class="picker-label">Minuty</div>
+                    <div class="drum" id="drum-minutes">
+                        <div class="drum-highlight"></div>
+                        <div class="drum-scroll" id="scroll-minutes">
+                            <div class="drum-pad"></div>
+                            <!-- filled by JS -->
+                            <div class="drum-pad"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="results">
+                <div class="result-row winter">
+                    <div class="result-left">
+                        <div class="result-season">❄️ Zima · max 8 h</div>
+                        <div class="result-months">listopad – březen (XI–III)</div>
+                    </div>
+                    <div class="result-time" id="result-winter">--:--</div>
+                </div>
+                <div class="result-row summer">
+                    <div class="result-left">
+                        <div class="result-season">☀️ Léto · max 12 h</div>
+                        <div class="result-months">duben – říjen (IV–X)</div>
+                    </div>
+                    <div class="result-time" id="result-summer">--:--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ITEM_H = 56;
+        const HOURS   = Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'));
+        const MINUTES = ['00', '10', '20', '30', '40', '50'];
+
+        function buildDrum(scrollEl, items) {
+            // Items are inserted between the two .drum-pad divs
+            const pads = scrollEl.querySelectorAll('.drum-pad');
+            items.forEach(val => {
+                const div = document.createElement('div');
+                div.className = 'drum-item';
+                div.textContent = val;
+                scrollEl.insertBefore(div, pads[1]);
+            });
+        }
+
+        function getSelected(scrollEl) {
+            return Math.round(scrollEl.scrollTop / ITEM_H);
+        }
+
+        function calcEnd(startH, startM, durationH) {
+            const total = startH * 60 + startM + durationH * 60;
+            const end = total % 1440;
+            return String(Math.floor(end / 60)).padStart(2, '0') + ':' +
+                   String(end % 60).padStart(2, '0');
+        }
+
+        function updateResults() {
+            const h = getSelected(scrollH);
+            const m = getSelected(scrollM);
+            const startH = parseInt(HOURS[h]);
+            const startM = parseInt(MINUTES[m]);
+            document.getElementById('result-winter').textContent = calcEnd(startH, startM, 8);
+            document.getElementById('result-summer').textContent = calcEnd(startH, startM, 12);
+        }
+
+        const scrollH = document.getElementById('scroll-hours');
+        const scrollM = document.getElementById('scroll-minutes');
+
+        buildDrum(scrollH, HOURS);
+        buildDrum(scrollM, MINUTES);
+
+        // Debounced scroll handler
+        function debounce(fn, delay) {
+            let t;
+            return function() { clearTimeout(t); t = setTimeout(fn, delay); };
+        }
+
+        const onScroll = debounce(updateResults, 80);
+        scrollH.addEventListener('scroll', onScroll, {passive: true});
+        scrollM.addEventListener('scroll', onScroll, {passive: true});
+
+        // Init to current time rounded to nearest 10 min
+        function init() {
+            const now = new Date();
+            let h = now.getHours();
+            let m = Math.round(now.getMinutes() / 10) * 10;
+            if (m === 60) { m = 0; h = (h + 1) % 24; }
+
+            const mIdx = MINUTES.indexOf(String(m).padStart(2, '0'));
+            scrollH.scrollTop = h * ITEM_H;
+            scrollM.scrollTop = (mIdx >= 0 ? mIdx : 0) * ITEM_H;
+            updateResults();
+        }
+
+        // Small delay so scroll settles before init
+        setTimeout(init, 50);
+    </script>
+</body>
+
+</html>
