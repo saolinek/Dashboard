@@ -203,6 +203,10 @@
             animation-delay: 0.24s;
         }
 
+        .app-card:nth-child(9) {
+            animation-delay: 0.27s;
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -349,6 +353,15 @@
         .card-timer .card-icon {
             background: #e6faf5;
             color: #0f9b8e;
+        }
+
+        .card-gym::before {
+            background: linear-gradient(to bottom, #ec4899, #8b5cf6);
+        }
+
+        .card-gym .card-icon {
+            background: #fce7f3;
+            color: #ec4899;
         }
 
         .app-card:hover .card-icon {
@@ -538,6 +551,15 @@
                 <div class="card-content">
                     <h2>Max doba vypínání</h2>
                     <p>Čas začátku a konce</p>
+                </div>
+                <div class="card-arrow">›</div>
+            </a>
+
+            <a href="https://saolinek.github.io/gym/" class="app-card card-gym">
+                <div class="card-icon">💪</div>
+                <div class="card-content">
+                    <h2>Gym</h2>
+                    <p>Fitness log & tréninky</p>
                 </div>
                 <div class="card-arrow">›</div>
             </a>
