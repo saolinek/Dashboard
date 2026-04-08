@@ -66,7 +66,7 @@
             flex-shrink: 0;
             /* Fixní výška, nesmršťuje se */
             width: 100%;
-            animation: fadeInDown 0.6s ease-out;
+            animation: fadeInDown 0.3s ease-out;
         }
 
         .hub-header h1 {
@@ -122,25 +122,23 @@
             padding-bottom: 40px;
             /* Větší spodní mezera */
 
-            /* Mobile First: 1 sloupec */
-            grid-template-columns: 1fr;
-            /* Tablet a větší: automatické řazení */
+            /* Vždy 2 sloupce */
+            grid-template-columns: repeat(2, 1fr);
             justify-content: center;
         }
 
-        /* Tablet a Desktop: 2 sloupce pro úsporu výšky */
+        /* Poslední lichá karta na střed */
+        .app-card:last-child:nth-child(odd) {
+            grid-column: span 2;
+            max-width: 50%;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Tablet a Desktop: omezení šířky */
         @media (min-width: 640px) {
             .app-grid {
-                grid-template-columns: repeat(2, 1fr);
                 max-width: 800px;
-            }
-
-            /* Poslední lichá karta (Analyzátor) na střed */
-            .app-card:last-child:nth-child(odd) {
-                grid-column: span 2;
-                max-width: 50%;
-                margin: 0 auto;
-                width: 100%;
             }
         }
 
@@ -157,7 +155,7 @@
             position: relative;
             overflow: hidden;
             transition: var(--transition-normal);
-            animation: fadeInUp 0.6s ease-out backwards;
+            animation: fadeInUp 0.3s ease-out backwards;
             box-shadow: var(--shadow-sm);
             text-decoration: none;
             min-height: 90px;
@@ -165,35 +163,31 @@
 
         /* Animace karet */
         .app-card:nth-child(1) {
-            animation-delay: 0.1s;
+            animation-delay: 0.03s;
         }
 
         .app-card:nth-child(2) {
-            animation-delay: 0.2s;
+            animation-delay: 0.06s;
         }
 
         .app-card:nth-child(3) {
-            animation-delay: 0.3s;
+            animation-delay: 0.09s;
         }
 
         .app-card:nth-child(4) {
-            animation-delay: 0.4s;
+            animation-delay: 0.12s;
         }
 
         .app-card:nth-child(5) {
-            animation-delay: 0.5s;
+            animation-delay: 0.15s;
         }
 
         .app-card:nth-child(6) {
-            animation-delay: 0.6s;
+            animation-delay: 0.18s;
         }
 
         .app-card:nth-child(7) {
-            animation-delay: 0.7s;
-        }
-
-        .app-card:nth-child(8) {
-            animation-delay: 0.8s;
+            animation-delay: 0.21s;
         }
 
         @keyframes fadeInUp {
@@ -249,10 +243,6 @@
             background: linear-gradient(to bottom, #ff9a9e, #fecfef);
         }
 
-        .card-energy::before {
-            background: linear-gradient(to bottom, #6ee7b7, #10b981);
-        }
-
         .card-calc::before {
             background: linear-gradient(to bottom, #4facfe, #00f2fe);
         }
@@ -296,11 +286,6 @@
         .card-outage .card-icon {
             background: #fff7ed;
             color: #ea580c;
-        }
-
-        .card-energy .card-icon {
-            background: #ecfdf5;
-            color: #10b981;
         }
 
         .card-calc .card-icon {
@@ -445,15 +430,6 @@
                 <div class="card-content">
                     <h2>Odstávky</h2>
                     <p>Plánovač lhůt</p>
-                </div>
-                <div class="card-arrow">›</div>
-            </a>
-
-            <a href="apps/Parametry_site.html" class="app-card card-energy">
-                <div class="card-icon">⚡</div>
-                <div class="card-content">
-                    <h2>Analyzátor</h2>
-                    <p>Parametry sítě</p>
                 </div>
                 <div class="card-arrow">›</div>
             </a>
