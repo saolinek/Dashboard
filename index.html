@@ -451,6 +451,348 @@
                 font-size: 18px;
             }
         }
+
+        /* === FOLDER SYSTEM === */
+        .edit-controls {
+            display: none;
+            gap: 12px;
+            margin-bottom: 16px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .edit-controls.active {
+            display: flex;
+        }
+
+        .edit-btn, .create-folder-btn {
+            background: var(--color-bg-primary);
+            border: 2px solid var(--color-accent-blue);
+            color: var(--color-accent-blue);
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            font-size: 0.9rem;
+        }
+
+        .edit-btn:hover, .create-folder-btn:hover {
+            background: var(--color-accent-blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .edit-btn.active {
+            background: var(--color-accent-blue);
+            color: white;
+        }
+
+        /* Folder View */
+        .view-folders {
+            display: none;
+        }
+
+        .view-folders.active {
+            display: block;
+        }
+
+        .folder-grid {
+            display: grid;
+            gap: 12px;
+            width: 100%;
+            grid-template-columns: repeat(2, 1fr);
+            padding: 16px;
+            padding-bottom: 40px;
+        }
+
+        @media (min-width: 640px) {
+            .folder-grid {
+                max-width: 800px;
+                gap: 16px;
+                padding: 20px;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .folder-card {
+            background: var(--color-bg-primary);
+            border: none;
+            border-radius: 16px;
+            padding: 14px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-normal);
+            box-shadow: var(--shadow-sm);
+            text-decoration: none;
+            min-height: 100px;
+            animation: fadeInUp 0.3s ease-out backwards;
+        }
+
+        @media (min-width: 640px) {
+            .folder-card {
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                padding: 20px;
+                gap: 16px;
+                border-radius: 20px;
+                min-height: 90px;
+            }
+        }
+
+        .folder-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .folder-card:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .folder-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 4px;
+            width: auto;
+            bottom: auto;
+            transition: height 0.3s;
+        }
+
+        .folder-card:hover::before {
+            height: 6px;
+        }
+
+        @media (min-width: 640px) {
+            .folder-card::before {
+                right: auto;
+                bottom: 0;
+                height: auto;
+                width: 5px;
+                transition: width 0.3s;
+            }
+
+            .folder-card:hover::before {
+                height: auto;
+                width: 8px;
+            }
+        }
+
+        .folder-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+            transition: transform 0.3s;
+        }
+
+        @media (min-width: 640px) {
+            .folder-icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 14px;
+                font-size: 24px;
+            }
+        }
+
+        .folder-card:hover .folder-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .folder-content {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+        }
+
+        .folder-content h2 {
+            font-weight: 800;
+            font-size: 0.85rem;
+            margin: 0 0 1px 0;
+            letter-spacing: -0.3px;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .folder-content p {
+            color: #64748b;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (min-width: 640px) {
+            .folder-content {
+                text-align: left;
+            }
+
+            .folder-content h2 {
+                font-size: 1.1rem;
+                letter-spacing: -0.5px;
+                margin: 0 0 2px 0;
+            }
+
+            .folder-content p {
+                font-size: 0.8rem;
+            }
+        }
+
+        .folder-card .card-arrow {
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+            .folder-card .card-arrow {
+                display: block;
+                color: #cbd5e1;
+                font-size: 1.25rem;
+                transition: all 0.3s;
+            }
+
+            .folder-card:hover .card-arrow {
+                transform: translateX(4px);
+                color: #94a3b8;
+            }
+        }
+
+        /* Folder Detail View */
+        .view-folder-detail {
+            display: none;
+        }
+
+        .view-folder-detail.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .folder-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--color-bg-primary);
+            margin-bottom: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .folder-detail-header:hover {
+            box-shadow: var(--shadow-sm);
+        }
+
+        .folder-detail-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #1e293b;
+            flex: 1;
+        }
+
+        .folder-detail-header .back-arrow {
+            color: #64748b;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Drag & Drop States */
+        .app-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .app-card[draggable="true"] {
+            cursor: grab;
+        }
+
+        .app-grid.drag-over {
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 12px;
+        }
+
+        .folder-card[draggable="true"] {
+            cursor: grab;
+        }
+
+        .folder-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        /* Edit Mode */
+        body.edit-mode .app-card,
+        body.edit-mode .folder-card {
+            opacity: 0.9;
+        }
+
+        body.edit-mode .app-card[draggable="true"],
+        body.edit-mode .folder-card[draggable="true"] {
+            cursor: grab;
+        }
+
+        .create-new-folder-card {
+            background: var(--color-bg-primary);
+            border: 2px dashed var(--color-accent-blue);
+            border-radius: 16px;
+            padding: 14px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-normal);
+            box-shadow: var(--shadow-sm);
+            text-decoration: none;
+            min-height: 100px;
+            animation: fadeInUp 0.3s ease-out backwards;
+        }
+
+        @media (min-width: 640px) {
+            .create-new-folder-card {
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                padding: 20px;
+                gap: 16px;
+                border-radius: 20px;
+                min-height: 90px;
+            }
+        }
+
+        .create-new-folder-card:hover {
+            background: rgba(59, 130, 246, 0.05);
+            transform: translateY(-4px);
+            border-color: var(--color-accent-blue);
+        }
+
+        .create-new-folder-card .folder-icon {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--color-accent-blue);
+        }
+
+        .create-new-folder-card h2 {
+            color: var(--color-accent-blue);
+        }
     </style>
 </head>
 
@@ -482,8 +824,33 @@
             </div>
         </div>
 
-        <div class="app-grid">
-            <a href="apps/lol.html" class="app-card card-lol">
+        <!-- Edit Controls -->
+        <div class="edit-controls" id="editControls">
+            <button class="edit-btn" id="editBtn">✏️ Upravit</button>
+            <button class="create-folder-btn" id="createFolderBtn">➕ Nová složka</button>
+        </div>
+
+        <!-- Folder View (Main Grid) -->
+        <div class="view-folders active" id="viewFolders">
+            <div class="folder-grid" id="folderGrid">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Folder Detail View -->
+        <div class="view-folder-detail" id="viewFolderDetail">
+            <div class="folder-detail-header">
+                <span class="back-arrow" id="backBtn">‹</span>
+                <h2 id="folderDetailTitle">Název složky</h2>
+            </div>
+            <div class="app-grid" id="folderDetailGrid">
+                <!-- Dynamically populated with cards -->
+            </div>
+        </div>
+
+        <!-- Hidden app-grid for reference (apps are defined here for easy access) -->
+        <div class="app-grid" id="allAppsGrid" style="display: none;">
+            <a href="apps/lol.html" class="app-card card-lol" data-card-id="lol" draggable="false">
                 <div class="card-icon">⚔️</div>
                 <div class="card-content">
                     <h2>LoL Calc</h2>
@@ -492,7 +859,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="apps/work.html" class="app-card card-work">
+            <a href="apps/work.html" class="app-card card-work" data-card-id="work" draggable="false">
                 <div class="card-icon">🕐</div>
                 <div class="card-content">
                     <h2>Práce</h2>
@@ -501,7 +868,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="apps/dalnice.html" class="app-card card-dalnice">
+            <a href="apps/dalnice.html" class="app-card card-dalnice" data-card-id="dalnice" draggable="false">
                 <div class="card-icon">🚗</div>
                 <div class="card-content">
                     <h2>Cesta</h2>
@@ -510,7 +877,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="apps/Odstavky.html" class="app-card card-outage">
+            <a href="apps/Odstavky.html" class="app-card card-outage" data-card-id="Odstavky" draggable="false">
                 <div class="card-icon">📅</div>
                 <div class="card-content">
                     <h2>Odstávky</h2>
@@ -519,7 +886,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="apps/prepocet_i.html" class="app-card card-calc">
+            <a href="apps/prepocet_i.html" class="app-card card-calc" data-card-id="prepocet_i" draggable="false">
                 <div class="card-icon">🧮</div>
                 <div class="card-content">
                     <h2>Kalkulačka</h2>
@@ -528,7 +895,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="apps/7dni.html" class="app-card card-7dni">
+            <a href="apps/7dni.html" class="app-card card-7dni" data-card-id="7dni" draggable="false">
                 <div class="card-icon">🗓️</div>
                 <div class="card-content">
                     <h2>7 Dní</h2>
@@ -537,7 +904,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="apps/Bookmarks.html" class="app-card card-bookmarks">
+            <a href="apps/Bookmarks.html" class="app-card card-bookmarks" data-card-id="Bookmarks" draggable="false">
                 <div class="card-icon">🔖</div>
                 <div class="card-content">
                     <h2>Záložky</h2>
@@ -546,7 +913,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="apps/odstavka-timer.html" class="app-card card-timer">
+            <a href="apps/odstavka-timer.html" class="app-card card-timer" data-card-id="odstavka-timer" draggable="false">
                 <div class="card-icon">⏱️</div>
                 <div class="card-content">
                     <h2>Max doba vypínání</h2>
@@ -555,7 +922,7 @@
                 <div class="card-arrow">›</div>
             </a>
 
-            <a href="https://saolinek.github.io/gym/" class="app-card card-gym">
+            <a href="https://saolinek.github.io/gym/" class="app-card card-gym" data-card-id="gym" draggable="false">
                 <div class="card-icon">💪</div>
                 <div class="card-content">
                     <h2>Gym</h2>
@@ -566,6 +933,349 @@
         </div>
     </div>
     <script>
+        // ============================================
+        // DASHBOARD FOLDER SYSTEM
+        // ============================================
+
+        const DASHBOARD_STATE_KEY = 'dashboard_folder_state';
+
+        // Default folders configuration
+        const DEFAULT_STATE = {
+            editMode: false,
+            currentFolder: null,
+            folders: [
+                {
+                    id: 'folder_work',
+                    name: 'Práce',
+                    icon: '🏗️',
+                    color: '#a18cd1',
+                    cards: ['work', 'odstavka-timer']
+                },
+                {
+                    id: 'folder_tools',
+                    name: 'Nástroje',
+                    icon: '🔧',
+                    color: '#4facfe',
+                    cards: ['dalnice', 'prepocet_i', 'Odstavky']
+                },
+                {
+                    id: 'folder_hobby',
+                    name: 'Volný čas',
+                    icon: '🎮',
+                    color: '#f6d365',
+                    cards: ['lol', '7dni', 'Bookmarks']
+                }
+            ],
+            unorganizedCards: ['gym']
+        };
+
+        let dashboardState = { ...DEFAULT_STATE };
+
+        // Load state from localStorage
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(DASHBOARD_STATE_KEY);
+                if (saved) {
+                    dashboardState = JSON.parse(saved);
+                } else {
+                    dashboardState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                    saveState();
+                }
+            } catch (e) {
+                console.log('Chyba načítání dashboard state:', e);
+                dashboardState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            try {
+                localStorage.setItem(DASHBOARD_STATE_KEY, JSON.stringify(dashboardState));
+            } catch (e) {
+                console.log('Chyba ukládání dashboard state:', e);
+            }
+        }
+
+        // Get card element by ID
+        function getCardElement(cardId) {
+            return document.querySelector(`[data-card-id="${cardId}"]`);
+        }
+
+        // Clone card element
+        function cloneCard(cardId) {
+            const original = getCardElement(cardId);
+            if (!original) return null;
+            const clone = original.cloneNode(true);
+            clone.removeAttribute('style');
+            return clone;
+        }
+
+        // Render folders view
+        function renderFolders() {
+            const folderGrid = document.getElementById('folderGrid');
+            folderGrid.innerHTML = '';
+
+            // Add folders
+            dashboardState.folders.forEach((folder, index) => {
+                const folderCard = document.createElement('div');
+                folderCard.className = 'folder-card';
+                folderCard.setAttribute('data-folder-id', folder.id);
+                folderCard.style.animationDelay = `${index * 0.03}s`;
+                folderCard.style.setProperty('--card-color', folder.color);
+
+                const folderIconEl = document.createElement('div');
+                folderIconEl.className = 'folder-icon';
+                folderIconEl.style.background = folder.color + '20';
+                folderIconEl.style.color = folder.color;
+                folderIconEl.textContent = folder.icon;
+
+                const folderContentEl = document.createElement('div');
+                folderContentEl.className = 'folder-content';
+
+                const titleEl = document.createElement('h2');
+                titleEl.textContent = folder.name;
+
+                const countEl = document.createElement('p');
+                countEl.textContent = `${folder.cards.length} položky`;
+
+                folderContentEl.appendChild(titleEl);
+                folderContentEl.appendChild(countEl);
+
+                const arrowEl = document.createElement('div');
+                arrowEl.className = 'card-arrow';
+                arrowEl.textContent = '›';
+
+                folderCard.appendChild(folderIconEl);
+                folderCard.appendChild(folderContentEl);
+                folderCard.appendChild(arrowEl);
+
+                // Add color bar
+                const colorBar = document.createElement('div');
+                colorBar.style.position = 'absolute';
+                colorBar.style.left = '0';
+                colorBar.style.right = '0';
+                colorBar.style.top = '0';
+                colorBar.style.height = '4px';
+                colorBar.style.background = folder.color;
+                folderCard.appendChild(colorBar);
+
+                folderCard.addEventListener('click', () => {
+                    if (!dashboardState.editMode) {
+                        openFolder(folder.id);
+                    }
+                });
+
+                if (dashboardState.editMode) {
+                    folderCard.draggable = true;
+                    folderCard.addEventListener('dragstart', handleDragStart);
+                    folderCard.addEventListener('dragend', handleDragEnd);
+                }
+
+                folderGrid.appendChild(folderCard);
+            });
+
+            // Add "Create Folder" button if in edit mode
+            if (dashboardState.editMode) {
+                const createBtn = document.createElement('div');
+                createBtn.className = 'create-new-folder-card';
+                createBtn.style.animationDelay = `${dashboardState.folders.length * 0.03}s`;
+
+                const iconEl = document.createElement('div');
+                iconEl.className = 'folder-icon';
+                iconEl.innerHTML = '➕';
+
+                const contentEl = document.createElement('div');
+                contentEl.className = 'folder-content';
+                const titleEl = document.createElement('h2');
+                titleEl.textContent = 'Nová složka';
+                contentEl.appendChild(titleEl);
+
+                createBtn.appendChild(iconEl);
+                createBtn.appendChild(contentEl);
+
+                createBtn.addEventListener('click', () => {
+                    const name = prompt('Jaký bude název složky?', '');
+                    if (name) {
+                        createFolder(name);
+                    }
+                });
+
+                folderGrid.appendChild(createBtn);
+            }
+
+            // Add unorganized cards section if there are any
+            if (dashboardState.unorganizedCards.length > 0 && !dashboardState.editMode) {
+                const unorgCard = document.createElement('div');
+                unorgCard.className = 'folder-card';
+                unorgCard.style.opacity = '0.7';
+
+                const iconEl = document.createElement('div');
+                iconEl.className = 'folder-icon';
+                iconEl.style.background = '#e5e7eb';
+                iconEl.style.color = '#6b7280';
+                iconEl.innerHTML = '📦';
+
+                const contentEl = document.createElement('div');
+                contentEl.className = 'folder-content';
+                const titleEl = document.createElement('h2');
+                titleEl.textContent = 'Ostatní';
+                const countEl = document.createElement('p');
+                countEl.textContent = `${dashboardState.unorganizedCards.length} položky`;
+                contentEl.appendChild(titleEl);
+                contentEl.appendChild(countEl);
+
+                const arrowEl = document.createElement('div');
+                arrowEl.className = 'card-arrow';
+                arrowEl.textContent = '›';
+
+                unorgCard.appendChild(iconEl);
+                unorgCard.appendChild(contentEl);
+                unorgCard.appendChild(arrowEl);
+
+                unorgCard.addEventListener('click', () => {
+                    openFolder('unorganized');
+                });
+
+                folderGrid.appendChild(unorgCard);
+            }
+        }
+
+        // Open folder detail
+        function openFolder(folderId) {
+            dashboardState.currentFolder = folderId;
+
+            const detailGrid = document.getElementById('folderDetailGrid');
+            const titleEl = document.getElementById('folderDetailTitle');
+            detailGrid.innerHTML = '';
+
+            let cards, folderName, folderColor = '#4facfe';
+
+            if (folderId === 'unorganized') {
+                cards = dashboardState.unorganizedCards;
+                folderName = 'Ostatní';
+            } else {
+                const folder = dashboardState.folders.find(f => f.id === folderId);
+                if (!folder) return;
+                cards = folder.cards;
+                folderName = folder.name;
+                folderColor = folder.color;
+            }
+
+            titleEl.textContent = folderName;
+
+            // Add cards to detail grid
+            cards.forEach((cardId, index) => {
+                const card = cloneCard(cardId);
+                if (card) {
+                    card.style.animationDelay = `${index * 0.03}s`;
+                    card.draggable = dashboardState.editMode;
+                    if (dashboardState.editMode) {
+                        card.setAttribute('data-source-folder', folderId);
+                        card.addEventListener('dragstart', handleDragStart);
+                        card.addEventListener('dragend', handleDragEnd);
+                    }
+                    detailGrid.appendChild(card);
+                }
+            });
+
+            // Show detail view
+            document.getElementById('viewFolders').classList.remove('active');
+            document.getElementById('viewFolderDetail').classList.add('active');
+        }
+
+        // Go back to folders view
+        function goBackToFolders() {
+            dashboardState.currentFolder = null;
+            document.getElementById('viewFolderDetail').classList.remove('active');
+            document.getElementById('viewFolders').classList.add('active');
+        }
+
+        // Toggle edit mode
+        function toggleEditMode() {
+            dashboardState.editMode = !dashboardState.editMode;
+            saveState();
+
+            const editBtn = document.getElementById('editBtn');
+            const editControls = document.getElementById('editControls');
+
+            if (dashboardState.editMode) {
+                editBtn.textContent = '✔️ Uložit';
+                editBtn.classList.add('active');
+                editControls.classList.add('active');
+                document.body.classList.add('edit-mode');
+            } else {
+                editBtn.textContent = '✏️ Upravit';
+                editBtn.classList.remove('active');
+                editControls.classList.remove('active');
+                document.body.classList.remove('edit-mode');
+            }
+
+            if (dashboardState.currentFolder) {
+                openFolder(dashboardState.currentFolder);
+            } else {
+                renderFolders();
+            }
+        }
+
+        // Create new folder
+        function createFolder(name, icon = '📁') {
+            const newFolder = {
+                id: 'folder_' + Date.now(),
+                name: name,
+                icon: icon,
+                color: '#' + Math.floor(Math.random() * 16777215).toString(16),
+                cards: []
+            };
+            dashboardState.folders.push(newFolder);
+            saveState();
+            renderFolders();
+        }
+
+        // Drag & Drop handlers
+        let draggedElement = null;
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        // Initialize dashboard
+        function initDashboard() {
+            loadState();
+
+            // Event listeners
+            document.getElementById('editBtn').addEventListener('click', toggleEditMode);
+            document.getElementById('createFolderBtn').addEventListener('click', () => {
+                const name = prompt('Jaký bude název složky?', '');
+                if (name) {
+                    createFolder(name);
+                }
+            });
+            document.getElementById('backBtn').addEventListener('click', goBackToFolders);
+
+            // Initial render
+            renderFolders();
+
+            // Make sure edit controls are visible if in edit mode
+            if (dashboardState.editMode) {
+                document.getElementById('editControls').classList.add('active');
+                document.getElementById('editBtn').classList.add('active');
+                document.getElementById('editBtn').textContent = '✔️ Uložit';
+                document.body.classList.add('edit-mode');
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initDashboard();
+        });
+
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
