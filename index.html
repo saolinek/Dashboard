@@ -452,7 +452,7 @@
             }
         }
 
-        /* === FOLDER SYSTEM === */
+        /* === FOLDER SYSTEM (NEW) === */
         .edit-controls {
             display: none;
             gap: 12px;
@@ -489,8 +489,8 @@
             color: white;
         }
 
-        /* Folder Grid */
-        .folder-grid {
+        /* Combined Grid for Folders and Root Apps */
+        .dashboard-grid {
             display: grid;
             gap: 12px;
             width: 100%;
@@ -500,20 +500,29 @@
             grid-template-columns: repeat(2, 1fr);
             padding: 16px;
             padding-bottom: 40px;
+            align-content: start;
         }
 
         @media (min-width: 640px) {
-            .folder-grid {
+            .dashboard-grid {
                 max-width: 800px;
                 gap: 16px;
                 padding: 20px;
-                grid-template-columns: repeat(2, 1fr);
             }
         }
 
+        .dashboard-grid .app-card:last-child:nth-child(odd) {
+            grid-column: span 1;
+            max-width: none;
+            margin: 0;
+            width: 100%;
+        }
+
+        /* Folder Card Design */
         .folder-card {
-            background: var(--color-bg-primary);
-            border: none;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.4);
             border-radius: 16px;
             padding: 14px 10px;
             display: flex;
@@ -546,66 +555,44 @@
         .folder-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .folder-card:active {
             transform: translateY(-2px) scale(0.98);
         }
 
-        .folder-card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            height: 4px;
-            width: auto;
-            bottom: auto;
-            transition: height 0.3s;
-        }
-
-        .folder-card:hover::before {
-            height: 6px;
-        }
-
-        @media (min-width: 640px) {
-            .folder-card::before {
-                right: auto;
-                bottom: 0;
-                height: auto;
-                width: 5px;
-                transition: width 0.3s;
-            }
-
-            .folder-card:hover::before {
-                height: auto;
-                width: 8px;
-            }
-        }
-
-        .folder-icon {
+        .folder-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 2px;
             width: 42px;
             height: 42px;
             border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.05);
+            padding: 4px;
             flex-shrink: 0;
-            transition: transform 0.3s;
         }
 
         @media (min-width: 640px) {
-            .folder-icon {
+            .folder-preview-grid {
                 width: 50px;
                 height: 50px;
                 border-radius: 14px;
-                font-size: 24px;
             }
         }
 
-        .folder-card:hover .folder-icon {
-            transform: scale(1.1) rotate(5deg);
+        .preview-mini-icon {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            background: white;
         }
 
         .folder-content {
@@ -630,237 +617,254 @@
             font-size: 0.7rem;
             font-weight: 600;
             margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         @media (min-width: 640px) {
-            .folder-content {
-                text-align: left;
-            }
-
-            .folder-content h2 {
-                font-size: 1.1rem;
-                letter-spacing: -0.5px;
-                margin: 0 0 2px 0;
-            }
-
-            .folder-content p {
-                font-size: 0.8rem;
-            }
+            .folder-content { text-align: left; }
+            .folder-content h2 { font-size: 1.1rem; margin: 0 0 2px 0; }
+            .folder-content p { font-size: 0.8rem; }
         }
 
-        .folder-card .card-arrow {
-            display: none;
-        }
-
-        @media (min-width: 640px) {
-            .folder-card .card-arrow {
-                display: block;
-                color: #cbd5e1;
-                font-size: 1.25rem;
-                transition: all 0.3s;
-            }
-
-            .folder-card:hover .card-arrow {
-                transform: translateX(4px);
-                color: #94a3b8;
-            }
-        }
-
-        /* Expanded Folder State */
-        .folder-card.expanded {
+        /* Folder Overlay Modal */
+        .folder-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100vw;
-            height: 100vh;
-            max-width: none;
-            border-radius: 0;
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            width: 100%;
+            height: 100%;
+            background: rgba(224, 195, 252, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            padding: 0;
-            margin: 0;
-            animation: expandFolder 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
-        @keyframes expandFolder {
-            from {
-                opacity: 0.8;
-                transform: scale(1);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        .folder-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        .folder-card.expanded .folder-header {
+        .folder-overlay-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 20px 16px;
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 1px solid #f1f5f9;
+            justify-content: space-between;
+            padding: 20px 24px;
+            margin-top: 10px;
+            background: transparent;
+            animation: fadeInDown 0.3s ease forwards;
         }
 
-        .folder-card.expanded .back-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #f1f5f9;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1.5rem;
-            border: none;
-            color: #1e293b;
-        }
-
-        .folder-card.expanded .back-btn:hover {
-            background: #e2e8f0;
-        }
-
-        .folder-card.expanded .folder-title {
-            flex: 1;
-            font-size: 1.3rem;
+        .folder-overlay-title {
+            font-size: 1.8rem;
             font-weight: 800;
             color: #1e293b;
             margin: 0;
+            flex: 1;
+            text-align: center;
         }
 
-        .folder-card.expanded .folder-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .folder-card.expanded .action-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #f1f5f9;
-            cursor: pointer;
-            transition: all 0.2s;
+        .folder-overlay-close {
+            background: rgba(255, 255, 255, 0.5);
             border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1.5rem;
             color: #1e293b;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: var(--shadow-sm);
         }
 
-        .folder-card.expanded .action-btn:hover {
-            background: #e2e8f0;
+        .folder-overlay-manage {
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            color: #1e293b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            margin-left: 8px;
         }
 
-        .folder-card.expanded .folder-content-area {
+        .folder-overlay-content {
             flex: 1;
-            overflow-y: auto;
             padding: 16px;
-            display: grid;
-            gap: 12px;
-            grid-template-columns: repeat(2, 1fr);
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
 
+        .folder-overlay-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
         @media (min-width: 640px) {
-            .folder-card.expanded .folder-content-area {
-                gap: 16px;
-                padding: 20px;
-                max-width: 800px;
-                margin: 0 auto;
-            }
+            .folder-overlay-grid { gap: 16px; padding: 20px; }
         }
 
-        /* Drag & Drop States */
-        .app-card.dragging {
-            opacity: 0.5;
-            cursor: grabbing;
-        }
-
-        .app-card[draggable="true"] {
-            cursor: grab;
-        }
-
-        .folder-content-area.drag-over {
-            background: rgba(59, 130, 246, 0.1);
-            border: 2px dashed var(--color-accent-blue);
-            border-radius: 12px;
-        }
-
-        .folder-card[draggable="true"] {
-            cursor: grab;
-        }
-
-        .folder-card.dragging {
-            opacity: 0.5;
-            cursor: grabbing;
-        }
-
-        /* Edit Mode */
-        body.edit-mode .app-card,
-        body.edit-mode .folder-card {
-            opacity: 0.9;
-        }
-
-        body.edit-mode .app-card[draggable="true"],
-        body.edit-mode .folder-card[draggable="true"] {
-            cursor: grab;
-        }
-
-        .create-new-folder-card {
-            background: var(--color-bg-primary);
-            border: 2px dashed var(--color-accent-blue);
-            border-radius: 16px;
-            padding: 14px 10px;
+        /* Generic Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin: 0 0 16px 0;
+            color: #1e293b;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: none;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition-normal);
+        }
+
+        .btn-primary-small {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: none;
+            background: var(--color-accent-blue);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-danger-small {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: none;
+            background: #fee2e2;
+            color: #ef4444;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Checkbox List */
+        .check-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 40vh;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .check-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--color-accent-blue);
+        }
+
+        .check-item-icon { font-size: 20px; }
+        .check-item-title { font-weight: 600; font-size: 0.9rem; }
+
+        /* Edit Mode Overlays */
+        body.edit-mode .app-card,
+        body.edit-mode .folder-card {
+            border: 2px dashed rgba(37, 99, 235, 0.4);
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(37, 99, 235, 0.2); }
+            50% { border-color: rgba(37, 99, 235, 0.6); }
+            100% { border-color: rgba(37, 99, 235, 0.2); }
+        }
+
+        .edit-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--color-accent-blue);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
             box-shadow: var(--shadow-sm);
-            text-decoration: none;
-            min-height: 100px;
-            animation: fadeInUp 0.3s ease-out backwards;
+            z-index: 10;
         }
 
-        @media (min-width: 640px) {
-            .create-new-folder-card {
-                flex-direction: row;
-                align-items: center;
-                justify-content: flex-start;
-                padding: 20px;
-                gap: 16px;
-                border-radius: 20px;
-                min-height: 90px;
-            }
+        .edit-badge.delete {
+            background: #ef4444;
         }
-
-        .create-new-folder-card:hover {
-            background: rgba(59, 130, 246, 0.05);
-            transform: translateY(-4px);
-            border-color: var(--color-accent-blue);
-        }
-
-        .create-new-folder-card .folder-icon {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--color-accent-blue);
-        }
-
-        .create-new-folder-card h2 {
-            color: var(--color-accent-blue);
-        }
-    </style>
+</style>
 </head>
 
 <body>
@@ -898,8 +902,8 @@
         </div>
 
         <!-- Main Grid (Single View) -->
-        <div class="folder-grid" id="folderGrid">
-            <!-- Dynamically populated with folders and cards -->
+        <div class="dashboard-grid" id="folderGrid">
+            <!-- Dynamically populated with folders and root cards -->
         </div>
 
         <!-- Hidden app-grid for reference (apps are defined here for easy access) -->
@@ -986,499 +990,408 @@
             </a>
         </div>
     </div>
+
+    <!-- Folder Overlay -->
+    <div class="folder-overlay" id="folderOverlay">
+        <div class="folder-overlay-header">
+            <button class="folder-overlay-close" id="folderOverlayClose">‹</button>
+            <h2 class="folder-overlay-title" id="folderOverlayTitle">Složka</h2>
+            <button class="folder-overlay-manage" id="folderOverlayManage" style="display:none;">⚙️</button>
+        </div>
+        <div class="folder-overlay-content">
+            <div class="folder-overlay-grid" id="folderOverlayGrid"></div>
+        </div>
+    </div>
+
+    <!-- Generic Modal Overlay -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card" id="modalCard">
+            <!-- Modal content injected dynamically -->
+        </div>
+    </div>
+
     <script>
         // ============================================
-        // DASHBOARD FOLDER SYSTEM (Android-style)
+        // DASHBOARD FOLDER SYSTEM (NEW)
         // ============================================
 
-        const DASHBOARD_STATE_KEY = 'dashboard_folder_state';
+        const DASHBOARD_STATE_KEY = 'dashboard_folder_state_v2';
 
-        // Default folders configuration
         const DEFAULT_STATE = {
-            editMode: false,
-            expandedFolderId: null,
             folders: [
-                {
-                    id: 'folder_work',
-                    name: 'Práce',
-                    icon: '🏗️',
-                    color: '#a18cd1',
-                    cards: ['work', 'odstavka-timer']
-                },
-                {
-                    id: 'folder_tools',
-                    name: 'Nástroje',
-                    icon: '🔧',
-                    color: '#4facfe',
-                    cards: ['dalnice', 'prepocet_i', 'Odstavky']
-                },
-                {
-                    id: 'folder_hobby',
-                    name: 'Volný čas',
-                    icon: '🎮',
-                    color: '#f6d365',
-                    cards: ['lol', '7dni', 'Bookmarks']
-                }
-            ],
-            unorganizedCards: ['gym']
+                { id: 'folder_work', name: 'Práce', color: '#a18cd1', cards: ['work', 'odstavka-timer'] },
+                { id: 'folder_tools', name: 'Nástroje', color: '#4facfe', cards: ['dalnice', 'prepocet_i', 'Odstavky'] },
+                { id: 'folder_hobby', name: 'Volný čas', color: '#f6d365', cards: ['lol', '7dni', 'Bookmarks'] }
+            ]
         };
 
         let dashboardState = { ...DEFAULT_STATE };
-        let draggedCard = null;
-        let dragSourceFolder = null;
+        let isEditMode = false;
+        let activeFolderId = null;
 
-        // Load state from localStorage
         function loadState() {
             try {
                 const saved = localStorage.getItem(DASHBOARD_STATE_KEY);
-                if (saved) {
-                    dashboardState = JSON.parse(saved);
-                } else {
-                    dashboardState = JSON.parse(JSON.stringify(DEFAULT_STATE));
-                    saveState();
-                }
+                if (saved) dashboardState = JSON.parse(saved);
+                else saveState();
             } catch (e) {
                 console.log('Chyba načítání dashboard state:', e);
                 dashboardState = JSON.parse(JSON.stringify(DEFAULT_STATE));
             }
         }
 
-        // Save state to localStorage
         function saveState() {
-            try {
-                localStorage.setItem(DASHBOARD_STATE_KEY, JSON.stringify(dashboardState));
-            } catch (e) {
-                console.log('Chyba ukládání dashboard state:', e);
-            }
+            localStorage.setItem(DASHBOARD_STATE_KEY, JSON.stringify(dashboardState));
         }
 
-        // Get card element by ID
-        function getCardElement(cardId) {
-            return document.querySelector(`[data-card-id="${cardId}"]`);
+        function getAllAvailableAppIds() {
+            return Array.from(document.querySelectorAll('#allAppsGrid .app-card')).map(el => el.getAttribute('data-card-id'));
         }
 
-        // Clone card element
-        function cloneCard(cardId) {
-            const original = getCardElement(cardId);
+        function getRootApps() {
+            const allApps = getAllAvailableAppIds();
+            const folderApps = new Set(dashboardState.folders.flatMap(f => f.cards));
+            return allApps.filter(id => !folderApps.has(id));
+        }
+
+        function getCardClone(cardId) {
+            const original = document.querySelector(`[data-card-id="${cardId}"]`);
             if (!original) return null;
             const clone = original.cloneNode(true);
             clone.removeAttribute('style');
-            clone.draggable = dashboardState.editMode;
+            clone.draggable = false;
+
+            if (isEditMode) {
+                clone.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showMoveAppModal(cardId);
+                });
+                const badge = document.createElement('div');
+                badge.className = 'edit-badge';
+                badge.innerHTML = '✏️';
+                clone.appendChild(badge);
+            }
+
             return clone;
         }
 
-        // Render main grid with folders and expanded folder content
+        function createFolderPreview(folder) {
+            const grid = document.createElement('div');
+            grid.className = 'folder-preview-grid';
+
+            // Show up to 4 mini icons
+            const cardsToShow = folder.cards.slice(0, 4);
+            cardsToShow.forEach(cardId => {
+                const original = document.querySelector(`[data-card-id="${cardId}"]`);
+                if (original) {
+                    const iconText = original.querySelector('.card-icon').textContent;
+                    const mini = document.createElement('div');
+                    mini.className = 'preview-mini-icon';
+                    mini.textContent = iconText;
+                    grid.appendChild(mini);
+                }
+            });
+
+            return grid;
+        }
+
         function renderGrid() {
-            const folderGrid = document.getElementById('folderGrid');
-            folderGrid.innerHTML = '';
+            const grid = document.getElementById('folderGrid');
+            grid.innerHTML = '';
 
-            // Check if we should show expanded folder
-            const expandedFolder = dashboardState.expandedFolderId ?
-                dashboardState.folders.find(f => f.id === dashboardState.expandedFolderId) : null;
-
-            if (expandedFolder) {
-                // Render expanded folder view
-                renderExpandedFolder(folderGrid, expandedFolder);
-            } else {
-                // Render collapsed folders view
-                renderCollapsedFolders(folderGrid);
-            }
-        }
-
-        // Render collapsed folders (normal view)
-        function renderCollapsedFolders(folderGrid) {
-            // Add folders
+            // Render Folders
             dashboardState.folders.forEach((folder, index) => {
-                const folderCard = createFolderCard(folder, index);
-                folderCard.addEventListener('click', () => {
-                    if (!dashboardState.editMode) {
-                        expandFolder(folder.id);
-                    }
-                });
-                folderGrid.appendChild(folderCard);
+                const card = document.createElement('div');
+                card.className = 'folder-card';
+                card.style.animationDelay = `${index * 0.03}s`;
+
+                card.appendChild(createFolderPreview(folder));
+
+                const content = document.createElement('div');
+                content.className = 'folder-content';
+                const title = document.createElement('h2');
+                title.textContent = folder.name;
+                const desc = document.createElement('p');
+                desc.textContent = `${folder.cards.length} aplikací`;
+                content.appendChild(title);
+                content.appendChild(desc);
+                card.appendChild(content);
+
+                // Add color bar
+                const colorBar = document.createElement('div');
+                colorBar.style.position = 'absolute';
+                colorBar.style.left = '0';
+                colorBar.style.top = '0';
+                colorBar.style.bottom = '0';
+                colorBar.style.width = '4px';
+                colorBar.style.background = folder.color;
+                card.appendChild(colorBar);
+
+                if (isEditMode) {
+                    const badge = document.createElement('div');
+                    badge.className = 'edit-badge';
+                    badge.innerHTML = '⚙️';
+                    card.appendChild(badge);
+
+                    card.addEventListener('click', () => showEditFolderModal(folder.id));
+                } else {
+                    card.addEventListener('click', () => openFolderOverlay(folder.id));
+                }
+
+                grid.appendChild(card);
             });
 
-            // Add "Create Folder" button if in edit mode
-            if (dashboardState.editMode) {
-                const createBtn = document.createElement('div');
-                createBtn.className = 'create-new-folder-card';
-                createBtn.style.animationDelay = `${dashboardState.folders.length * 0.03}s`;
-
-                const iconEl = document.createElement('div');
-                iconEl.className = 'folder-icon';
-                iconEl.innerHTML = '➕';
-
-                const contentEl = document.createElement('div');
-                contentEl.className = 'folder-content';
-                const titleEl = document.createElement('h2');
-                titleEl.textContent = 'Nová složka';
-                contentEl.appendChild(titleEl);
-
-                createBtn.appendChild(iconEl);
-                createBtn.appendChild(contentEl);
-
-                createBtn.addEventListener('click', () => {
-                    const name = prompt('Jaký bude název složky?', '');
-                    if (name) {
-                        createFolder(name);
-                    }
-                });
-
-                folderGrid.appendChild(createBtn);
-            }
-
-            // Add unorganized cards section
-            if (dashboardState.unorganizedCards.length > 0) {
-                const unorgCard = document.createElement('div');
-                unorgCard.className = 'folder-card';
-                unorgCard.style.opacity = '0.7';
-                unorgCard.style.animationDelay = `${dashboardState.folders.length * 0.03}s`;
-
-                const iconEl = document.createElement('div');
-                iconEl.className = 'folder-icon';
-                iconEl.style.background = '#e5e7eb';
-                iconEl.style.color = '#6b7280';
-                iconEl.innerHTML = '📦';
-
-                const contentEl = document.createElement('div');
-                contentEl.className = 'folder-content';
-                const titleEl = document.createElement('h2');
-                titleEl.textContent = 'Ostatní';
-                const countEl = document.createElement('p');
-                countEl.textContent = `${dashboardState.unorganizedCards.length} položky`;
-                contentEl.appendChild(titleEl);
-                contentEl.appendChild(countEl);
-
-                const arrowEl = document.createElement('div');
-                arrowEl.className = 'card-arrow';
-                arrowEl.textContent = '›';
-
-                unorgCard.appendChild(iconEl);
-                unorgCard.appendChild(contentEl);
-                unorgCard.appendChild(arrowEl);
-
-                unorgCard.addEventListener('click', () => {
-                    expandFolder('unorganized');
-                });
-
-                folderGrid.appendChild(unorgCard);
-            }
-        }
-
-        // Create folder card element
-        function createFolderCard(folder, index) {
-            const folderCard = document.createElement('div');
-            folderCard.className = 'folder-card';
-            folderCard.setAttribute('data-folder-id', folder.id);
-            folderCard.style.animationDelay = `${index * 0.03}s`;
-
-            const folderIconEl = document.createElement('div');
-            folderIconEl.className = 'folder-icon';
-            folderIconEl.style.background = folder.color + '20';
-            folderIconEl.style.color = folder.color;
-            folderIconEl.textContent = folder.icon;
-
-            const folderContentEl = document.createElement('div');
-            folderContentEl.className = 'folder-content';
-
-            const titleEl = document.createElement('h2');
-            titleEl.textContent = folder.name;
-
-            const countEl = document.createElement('p');
-            countEl.textContent = `${folder.cards.length} položky`;
-
-            folderContentEl.appendChild(titleEl);
-            folderContentEl.appendChild(countEl);
-
-            const arrowEl = document.createElement('div');
-            arrowEl.className = 'card-arrow';
-            arrowEl.textContent = '›';
-
-            folderCard.appendChild(folderIconEl);
-            folderCard.appendChild(folderContentEl);
-            folderCard.appendChild(arrowEl);
-
-            // Add color bar
-            const colorBar = document.createElement('div');
-            colorBar.style.position = 'absolute';
-            colorBar.style.left = '0';
-            colorBar.style.right = '0';
-            colorBar.style.top = '0';
-            colorBar.style.height = '4px';
-            colorBar.style.background = folder.color;
-            folderCard.appendChild(colorBar);
-
-            return folderCard;
-        }
-
-        // Render expanded folder view (Android-style)
-        function renderExpandedFolder(folderGrid, folder) {
-            folderGrid.style.display = 'block';
-
-            const expandedCard = document.createElement('div');
-            expandedCard.className = 'folder-card expanded';
-            expandedCard.setAttribute('data-folder-id', folder.id);
-
-            // Header
-            const header = document.createElement('div');
-            header.className = 'folder-header';
-
-            const backBtn = document.createElement('button');
-            backBtn.className = 'back-btn';
-            backBtn.innerHTML = '‹';
-            backBtn.addEventListener('click', collapseFolder);
-
-            const title = document.createElement('h2');
-            title.className = 'folder-title';
-            title.textContent = folder.name;
-
-            const actions = document.createElement('div');
-            actions.className = 'folder-actions';
-
-            // Delete button
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'action-btn';
-            deleteBtn.innerHTML = '🗑️';
-            deleteBtn.title = 'Smazat složku';
-            deleteBtn.addEventListener('click', () => deleteFolder(folder.id));
-
-            // Rename button
-            const renameBtn = document.createElement('button');
-            renameBtn.className = 'action-btn';
-            renameBtn.innerHTML = '✏️';
-            renameBtn.title = 'Přejmenovat složku';
-            renameBtn.addEventListener('click', () => renameFolder(folder.id));
-
-            if (dashboardState.editMode) {
-                actions.appendChild(renameBtn);
-                actions.appendChild(deleteBtn);
-            }
-
-            header.appendChild(backBtn);
-            header.appendChild(title);
-            header.appendChild(actions);
-
-            // Content area
-            const contentArea = document.createElement('div');
-            contentArea.className = 'folder-content-area';
-            contentArea.setAttribute('data-folder-id', folder.id);
-
-            // Setup drag over for moving cards
-            contentArea.addEventListener('dragover', handleContentAreaDragOver);
-            contentArea.addEventListener('drop', handleContentAreaDrop);
-            contentArea.addEventListener('dragleave', handleContentAreaDragLeave);
-
-            folder.cards.forEach((cardId, index) => {
-                const card = cloneCard(cardId);
-                if (card) {
-                    card.style.animationDelay = `${index * 0.03}s`;
-                    card.setAttribute('data-source-folder', folder.id);
-
-                    if (dashboardState.editMode) {
-                        card.draggable = true;
-                        card.addEventListener('dragstart', handleCardDragStart);
-                        card.addEventListener('dragend', handleCardDragEnd);
-                    }
-
-                    contentArea.appendChild(card);
+            // Render Root Apps
+            const rootApps = getRootApps();
+            rootApps.forEach((cardId, index) => {
+                const appCard = getCardClone(cardId);
+                if (appCard) {
+                    appCard.style.animationDelay = `${(dashboardState.folders.length + index) * 0.03}s`;
+                    grid.appendChild(appCard);
                 }
             });
-
-            expandedCard.appendChild(header);
-            expandedCard.appendChild(contentArea);
-
-            folderGrid.appendChild(expandedCard);
         }
 
-        // Expand folder (Android animation)
-        function expandFolder(folderId) {
-            dashboardState.expandedFolderId = folderId;
-            renderGrid();
-        }
-
-        // Collapse folder
-        function collapseFolder() {
-            dashboardState.expandedFolderId = null;
-            renderGrid();
-        }
-
-        // Delete folder
-        function deleteFolder(folderId) {
-            if (confirm('Opravdu chceš smazat tuto složku? Karty v ní zůstanou v "Ostatní".')) {
-                const folder = dashboardState.folders.find(f => f.id === folderId);
-                if (folder) {
-                    // Move cards to unorganized
-                    dashboardState.unorganizedCards.push(...folder.cards);
-                    // Remove folder
-                    dashboardState.folders = dashboardState.folders.filter(f => f.id !== folderId);
-                    dashboardState.expandedFolderId = null;
-                    saveState();
-                    renderGrid();
-                }
-            }
-        }
-
-        // Rename folder
-        function renameFolder(folderId) {
+        function openFolderOverlay(folderId) {
+            activeFolderId = folderId;
             const folder = dashboardState.folders.find(f => f.id === folderId);
-            if (folder) {
-                const newName = prompt('Nový název složky:', folder.name);
-                if (newName && newName.trim()) {
-                    folder.name = newName.trim();
-                    saveState();
-                    renderGrid();
+            if (!folder) return;
+
+            document.getElementById('folderOverlayTitle').textContent = folder.name;
+            const grid = document.getElementById('folderOverlayGrid');
+            grid.innerHTML = '';
+
+            folder.cards.forEach((cardId, i) => {
+                const appCard = getCardClone(cardId);
+                if (appCard) {
+                    appCard.style.animation = 'none'; // Prevent double animation
+                    appCard.style.opacity = '1';
+                    grid.appendChild(appCard);
                 }
-            }
-        }
-
-        // Toggle edit mode
-        function toggleEditMode() {
-            dashboardState.editMode = !dashboardState.editMode;
-            saveState();
-
-            const editBtn = document.getElementById('editBtn');
-            const editControls = document.getElementById('editControls');
-
-            if (dashboardState.editMode) {
-                editBtn.textContent = '✔️ Uložit';
-                editBtn.classList.add('active');
-                editControls.classList.add('active');
-                document.body.classList.add('edit-mode');
-            } else {
-                editBtn.textContent = '✏️ Upravit';
-                editBtn.classList.remove('active');
-                editControls.classList.remove('active');
-                document.body.classList.remove('edit-mode');
-            }
-
-            renderGrid();
-        }
-
-        // Create new folder
-        function createFolder(name, icon = '📁') {
-            const newFolder = {
-                id: 'folder_' + Date.now(),
-                name: name,
-                icon: icon,
-                color: '#' + Math.floor(Math.random() * 16777215).toString(16),
-                cards: []
-            };
-            dashboardState.folders.push(newFolder);
-            saveState();
-            renderGrid();
-        }
-
-        // Card Drag & Drop handlers
-        function handleCardDragStart(e) {
-            draggedCard = this.getAttribute('data-card-id');
-            dragSourceFolder = this.getAttribute('data-source-folder');
-            this.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', draggedCard);
-        }
-
-        function handleCardDragEnd(e) {
-            this.classList.remove('dragging');
-            draggedCard = null;
-            dragSourceFolder = null;
-
-            // Remove drag-over class from all content areas
-            document.querySelectorAll('.folder-content-area').forEach(area => {
-                area.classList.remove('drag-over');
             });
-        }
 
-        // Content area drag handlers
-        function handleContentAreaDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            this.classList.add('drag-over');
-        }
+            document.getElementById('folderOverlay').classList.add('active');
 
-        function handleContentAreaDragLeave(e) {
-            if (e.target === this) {
-                this.classList.remove('drag-over');
-            }
-        }
-
-        function handleContentAreaDrop(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            this.classList.remove('drag-over');
-
-            if (!draggedCard || !dragSourceFolder) return;
-
-            const targetFolderId = this.getAttribute('data-folder-id');
-
-            // Don't move to same folder
-            if (dragSourceFolder === targetFolderId) return;
-
-            // Move card from source folder to target folder
-            let sourceCards;
-            if (dragSourceFolder === 'unorganized') {
-                sourceCards = dashboardState.unorganizedCards;
+            const manageBtn = document.getElementById('folderOverlayManage');
+            if (isEditMode) {
+                manageBtn.style.display = 'flex';
+                manageBtn.onclick = () => showManageFolderAppsModal(folder.id);
             } else {
-                const sourceFolder = dashboardState.folders.find(f => f.id === dragSourceFolder);
-                sourceCards = sourceFolder ? sourceFolder.cards : null;
+                manageBtn.style.display = 'none';
             }
+        }
 
-            if (!sourceCards) return;
+        function closeFolderOverlay() {
+            document.getElementById('folderOverlay').classList.remove('active');
+            activeFolderId = null;
+        }
 
-            // Remove from source
-            const cardIndex = sourceCards.indexOf(draggedCard);
-            if (cardIndex > -1) {
-                sourceCards.splice(cardIndex, 1);
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            document.body.classList.toggle('edit-mode', isEditMode);
+
+            const btn = document.getElementById('editBtn');
+            const controls = document.getElementById('editControls');
+
+            if (isEditMode) {
+                btn.innerHTML = '✔️ Hotovo';
+                btn.classList.add('active');
+                controls.classList.add('active');
+            } else {
+                btn.innerHTML = '✏️ Upravit';
+                btn.classList.remove('active');
+                controls.classList.remove('active');
+                if (activeFolderId) closeFolderOverlay();
             }
+            renderGrid();
+        }
+
+        // ============================================
+        // MODAL SYSTEM
+        // ============================================
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalCard = document.getElementById('modalCard');
+
+        function showModal(htmlContent) {
+            modalCard.innerHTML = htmlContent;
+            modalOverlay.classList.add('active');
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+        }
+
+        // Move App Modal
+        function showMoveAppModal(cardId) {
+            const original = document.querySelector(`[data-card-id="${cardId}"]`);
+            const title = original.querySelector('h2').textContent;
+
+            let html = `
+                <h3 class="modal-title">Přesunout: ${title}</h3>
+                <div class="check-list">
+                    <div class="check-item" onclick="moveAppToFolder('${cardId}', null)">
+                        <span class="check-item-icon">🏠</span>
+                        <span class="check-item-title">Hlavní plocha (Vyjmout ze složky)</span>
+                    </div>
+            `;
+
+            dashboardState.folders.forEach(f => {
+                html += `
+                    <div class="check-item" onclick="moveAppToFolder('${cardId}', '${f.id}')">
+                        <span class="check-item-icon" style="color: ${f.color}">📁</span>
+                        <span class="check-item-title">${f.name}</span>
+                    </div>
+                `;
+            });
+
+            html += `</div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeModal()">Zrušit</button>
+                </div>
+            `;
+
+            showModal(html);
+        }
+
+        window.moveAppToFolder = function(cardId, targetFolderId) {
+            // Remove from current
+            dashboardState.folders.forEach(f => {
+                f.cards = f.cards.filter(id => id !== cardId);
+            });
 
             // Add to target
-            let targetCards;
-            if (targetFolderId === 'unorganized') {
-                targetCards = dashboardState.unorganizedCards;
-            } else {
-                const targetFolder = dashboardState.folders.find(f => f.id === targetFolderId);
-                targetCards = targetFolder ? targetFolder.cards : null;
+            if (targetFolderId) {
+                const target = dashboardState.folders.find(f => f.id === targetFolderId);
+                if (target) target.cards.push(cardId);
             }
 
-            if (targetCards && !targetCards.includes(draggedCard)) {
-                targetCards.push(draggedCard);
-            }
-
-            draggedCard = null;
-            dragSourceFolder = null;
             saveState();
+            closeModal();
+            renderGrid();
+            if (activeFolderId) openFolderOverlay(activeFolderId);
+        }
+
+        // Edit Folder Modal
+        function showEditFolderModal(folderId) {
+            const folder = dashboardState.folders.find(f => f.id === folderId);
+            if (!folder) return;
+
+            const html = `
+                <h3 class="modal-title">Upravit složku</h3>
+                <input type="text" id="folderNameInput" class="input-field" value="${folder.name}" style="margin-bottom: 16px;">
+                <label class="input-label">Barva</label>
+                <input type="color" id="folderColorInput" value="${folder.color}" style="width:100%; height:40px; border:none; border-radius:8px; cursor:pointer;">
+
+                <div class="modal-actions" style="justify-content: space-between; margin-top: 24px;">
+                    <button class="btn-danger-small" onclick="deleteFolder('${folder.id}')">🗑️ Smazat složku</button>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-secondary" onclick="closeModal()">Zrušit</button>
+                        <button class="btn-primary-small" onclick="saveFolderEdit('${folder.id}')">Uložit</button>
+                    </div>
+                </div>
+            `;
+            showModal(html);
+        }
+
+        window.saveFolderEdit = function(folderId) {
+            const folder = dashboardState.folders.find(f => f.id === folderId);
+            if (folder) {
+                folder.name = document.getElementById('folderNameInput').value;
+                folder.color = document.getElementById('folderColorInput').value;
+                saveState();
+                renderGrid();
+            }
+            closeModal();
+        }
+
+        window.deleteFolder = function(folderId) {
+            if (confirm('Opravdu smazat? Aplikace se vrátí na hlavní plochu.')) {
+                dashboardState.folders = dashboardState.folders.filter(f => f.id !== folderId);
+                saveState();
+                closeModal();
+                renderGrid();
+            }
+        }
+
+        // New Folder
+        function createNewFolder() {
+            const id = 'folder_' + Date.now();
+            const color = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            dashboardState.folders.push({ id, name: 'Nová Složka', color, cards: [] });
+            saveState();
+            renderGrid();
+            showEditFolderModal(id);
+        }
+
+        // Manage Folder Apps Modal
+        window.showManageFolderAppsModal = function(folderId) {
+            const folder = dashboardState.folders.find(f => f.id === folderId);
+            if (!folder) return;
+
+            const allApps = getAllAvailableAppIds();
+
+            let html = `
+                <h3 class="modal-title">Aplikace ve složce: ${folder.name}</h3>
+                <div class="check-list">
+            `;
+
+            allApps.forEach(cardId => {
+                const original = document.querySelector(`[data-card-id="${cardId}"]`);
+                const title = original.querySelector('h2').textContent;
+                const icon = original.querySelector('.card-icon').textContent;
+                const isChecked = folder.cards.includes(cardId) ? 'checked' : '';
+
+                html += `
+                    <label class="check-item">
+                        <input type="checkbox" id="chk_${cardId}" value="${cardId}" ${isChecked}>
+                        <span class="check-item-icon">${icon}</span>
+                        <span class="check-item-title">${title}</span>
+                    </label>
+                `;
+            });
+
+            html += `</div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeModal()">Zrušit</button>
+                    <button class="btn-primary-small" onclick="saveManageFolderApps('${folder.id}')">Uložit</button>
+                </div>
+            `;
+            showModal(html);
+        }
+
+        window.saveManageFolderApps = function(folderId) {
+            const folder = dashboardState.folders.find(f => f.id === folderId);
+            if (!folder) return;
+
+            const checkedBoxes = Array.from(document.querySelectorAll('.check-item input:checked')).map(cb => cb.value);
+
+            // Remove checked apps from all other folders first
+            dashboardState.folders.forEach(f => {
+                if (f.id !== folderId) {
+                    f.cards = f.cards.filter(id => !checkedBoxes.includes(id));
+                }
+            });
+
+            // Assign to this folder
+            folder.cards = checkedBoxes;
+
+            saveState();
+            closeModal();
+            openFolderOverlay(folderId); // refresh
             renderGrid();
         }
 
-        // Initialize dashboard
         function initDashboard() {
             loadState();
 
-            // Event listeners
             document.getElementById('editBtn').addEventListener('click', toggleEditMode);
-            document.getElementById('createFolderBtn').addEventListener('click', () => {
-                const name = prompt('Jaký bude název složky?', '');
-                if (name) {
-                    createFolder(name);
-                }
-            });
+            document.getElementById('createFolderBtn').addEventListener('click', createNewFolder);
+            document.getElementById('folderOverlayClose').addEventListener('click', closeFolderOverlay);
 
-            // Initial render
             renderGrid();
-
-            // Make sure edit controls are visible if in edit mode
-            if (dashboardState.editMode) {
-                document.getElementById('editControls').classList.add('active');
-                document.getElementById('editBtn').classList.add('active');
-                document.getElementById('editBtn').textContent = '✔️ Uložit';
-                document.body.classList.add('edit-mode');
-            }
         }
 
-        // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', () => {
-            initDashboard();
-        });
+        document.addEventListener('DOMContentLoaded', initDashboard);
 
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
