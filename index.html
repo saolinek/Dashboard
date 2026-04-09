@@ -454,7 +454,7 @@
 
         /* === FOLDER SYSTEM (NEW) === */
         .edit-controls {
-            display: none;
+            display: flex;
             gap: 12px;
             margin-bottom: 16px;
             width: 100%;
@@ -462,8 +462,12 @@
             flex-wrap: wrap;
         }
 
-        .edit-controls.active {
-            display: flex;
+        .create-folder-btn {
+            display: none;
+        }
+
+        .edit-controls.active .create-folder-btn {
+            display: block;
         }
 
         .edit-btn, .create-folder-btn {
