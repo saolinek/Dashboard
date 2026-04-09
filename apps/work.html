@@ -169,7 +169,10 @@
             const W_KEY = 'work_time_state';
 
             function minToTime(m) {
-                return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+                const abs = Math.abs(m);
+                const h = Math.floor(abs / 60);
+                const min = abs % 60;
+                return `${m < 0 ? '-' : ''}${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
             }
 
             function saveState() {
